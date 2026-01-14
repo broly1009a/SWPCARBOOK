@@ -1,0 +1,147 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết thanh toán - CarBook</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <%@ include file="includes/navbar.jsp" %>
+    
+    <section class="ftco-section">
+        <div class="container">
+            <h2>Chi tiết thanh toán</h2>
+            
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger">${error}</div>
+            </c:if>
+            <c:if test="${not empty success}">
+                <div class="alert alert-success">${success}</div>
+            </c:if>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between">
+                            <h5>Mã thanh toán: ${payment.transactionId}</h5>
+                            <span class="badge badge-${payment.status == 'Completed' ? 'success' : payment.status == 'Pending' ? 'warning' : payment.status == 'Failed' ? 'danger' : 'secondary'} badge-lg">
+                                ${payment.status}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h6>Thông tin đơn đặt xe</h6>
+                            <p>
+                                <strong>Mã đơn:</strong> ${booking.bookingReference}<br>
+                                <strong>Xe:</strong> ${booking.car.licensePlate}<br>
+                                <strong>Ngày nhận:</strong> <fmt:formatDate value="${booking.pickupDate}" pattern="dd/MM/yyyy HH:mm"/><br>
+                                <strong>Ngày trả:</strong> <fmt:formatDate value="${booking.returnDate}" pattern="dd/MM/yyyy HH:mm"/>
+                            </p>
+                            
+                            <hr>
+                            
+                            <h6>Thông tin thanh toán</h6>
+                            <p>
+                                <strong>Phương thức:</strong> ${payment.paymentMethod.name}<br>
+                                <strong>Ngày thanh toán:</strong> <fmt:formatDate value="${payment.paymentDate}" pattern="dd/MM/yyyy HH:mm"/><br>
+                                <strong>Số tiền:</strong> <fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="₫"/>
+                            </p>
+                            
+                            <c:if test="${not empty payment.notes}">
+                                <hr>
+                                <h6>Ghi chú</h6>
+                                <p>${payment.notes}</p>
+                            </c:if>
+                        </div>
+                    </div>
+                    
+                    <c:if test="${payment.status == 'Pending' && (sessionScope.user.roleId == 1 || payment.booking.car.ownerId == sessionScope.user.userId)}">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="payment?action=confirm&id=${payment.paymentId}" class="btn btn-success" onclick="return confirm('Xác nhận thanh toán đã hoàn thành?')">Xác nhận</a>
+                                <button class="btn btn-danger" data-toggle="modal" data-target="#failModal">Đánh dấu thất bại</button>
+                                <a href="payment" class="btn btn-secondary">Quay lại</a>
+                            </div>
+                        </div>
+                    </c:if>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Tóm tắt</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                <strong>Giá cơ bản:</strong> <fmt:formatNumber value="${booking.basePrice}" type="currency" currencySymbol="₫"/><br>
+                                <strong>Thuế:</strong> <fmt:formatNumber value="${booking.taxAmount}" type="currency" currencySymbol="₫"/><br>
+                                <c:if test="${booking.discountAmount > 0}">
+                                    <strong>Giảm giá:</strong> -<fmt:formatNumber value="${booking.discountAmount}" type="currency" currencySymbol="₫"/><br>
+                                </c:if>
+                            </p>
+                            <hr>
+                            <h4><strong>Tổng cộng:</strong> <fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="₫"/></h4>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5>Lịch sử</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><small>
+                                <strong>Ngày tạo:</strong> <fmt:formatDate value="${payment.createdAt}" pattern="dd/MM/yyyy HH:mm"/><br>
+                                <c:if test="${not empty payment.completedAt}">
+                                    <strong>Hoàn thành:</strong> <fmt:formatDate value="${payment.completedAt}" pattern="dd/MM/yyyy HH:mm"/><br>
+                                </c:if>
+                                <c:if test="${not empty payment.failedAt}">
+                                    <strong>Thất bại:</strong> <fmt:formatDate value="${payment.failedAt}" pattern="dd/MM/yyyy HH:mm"/><br>
+                                    <strong>Lý do:</strong> ${payment.failureReason}<br>
+                                </c:if>
+                            </small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Fail Modal -->
+    <div class="modal fade" id="failModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="payment" method="get">
+                    <input type="hidden" name="action" value="fail">
+                    <input type="hidden" name="id" value="${payment.paymentId}">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Đánh dấu thất bại</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Lý do thất bại:</label>
+                            <textarea class="form-control" name="reason" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">Xác nhận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <%@ include file="includes/footer.jsp" %>
+    
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+</html>
