@@ -563,6 +563,37 @@
         scrollbar: true,
         show2400: false
       });
+      
+      // Lưu thông tin tìm kiếm vào sessionStorage khi người dùng điền form
+      $('.request-form').on('submit', function() {
+        var searchData = {
+          pickupLocation: $(this).find('input[name="pickupLocation"]').val(),
+          dropoffLocation: $(this).find('input[name="dropoffLocation"]').val(),
+          pickupDate: $('#book_pick_date').val(),
+          dropoffDate: $('#book_off_date').val(),
+          pickupTime: $('#time_pick').val()
+        };
+        sessionStorage.setItem('bookingSearchData', JSON.stringify(searchData));
+      });
+      
+      // Thêm thông tin tìm kiếm vào link "Đặt ngay"
+      $('.btn-primary[href*="booking?action=create"]').on('click', function(e) {
+        var href = $(this).attr('href');
+        var searchData = sessionStorage.getItem('bookingSearchData');
+        if (searchData) {
+          var data = JSON.parse(searchData);
+          var params = [];
+          if (data.pickupLocation) params.push('pickupLocation=' + encodeURIComponent(data.pickupLocation));
+          if (data.dropoffLocation) params.push('dropoffLocation=' + encodeURIComponent(data.dropoffLocation));
+          if (data.pickupDate) params.push('pickupDate=' + encodeURIComponent(data.pickupDate));
+          if (data.dropoffDate) params.push('dropoffDate=' + encodeURIComponent(data.dropoffDate));
+          if (data.pickupTime) params.push('pickupTime=' + encodeURIComponent(data.pickupTime));
+          
+          if (params.length > 0) {
+            $(this).attr('href', href + '&' + params.join('&'));
+          }
+        }
+      });
     });
   </script>
     

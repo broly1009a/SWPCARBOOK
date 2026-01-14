@@ -75,24 +75,46 @@
                                         <h5>Thời gian thuê</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="form-group">
-                                            <label>Ngày nhận xe <span class="text-danger">*</span></label>
-                                            <input type="datetime-local" class="form-control" name="pickupDate" required>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label>Ngày nhận xe <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" name="pickupDateOnly" id="pickup_date_only" placeholder="dd/mm/yyyy" required autocomplete="off">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label>Giờ nhận <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" name="pickupTimeOnly" id="pickup_time_only" placeholder="HH:MM" required autocomplete="off">
+                                                </div>
+                                            </div>
                                         </div>
+                                        <input type="hidden" name="pickupDate" id="pickup_date_full">
                                         
-                                        <div class="form-group">
-                                            <label>Ngày trả xe <span class="text-danger">*</span></label>
-                                            <input type="datetime-local" class="form-control" name="returnDate" required>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label>Ngày trả xe <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" name="returnDateOnly" id="return_date_only" placeholder="dd/mm/yyyy" required autocomplete="off">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label>Giờ trả <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" name="returnTimeOnly" id="return_time_only" placeholder="HH:MM" required autocomplete="off">
+                                                </div>
+                                            </div>
                                         </div>
+                                        <input type="hidden" name="returnDate" id="return_date_full">
                                         
                                         <div class="form-group">
                                             <label>Địa điểm nhận xe</label>
-                                            <input type="text" class="form-control" name="pickupLocation" placeholder="Nhập địa điểm nhận xe">
+                                            <input type="text" class="form-control" name="pickupLocation" id="pickup_location" placeholder="Nhập địa điểm nhận xe" value="${pickupLocation}">
                                         </div>
                                         
                                         <div class="form-group">
                                             <label>Địa điểm trả xe</label>
-                                            <input type="text" class="form-control" name="returnLocation" placeholder="Nhập địa điểm trả xe">
+                                            <input type="text" class="form-control" name="returnLocation" id="return_location" placeholder="Nhập địa điểm trả xe" value="${dropoffLocation}">
                                         </div>
                                         
                                         <div class="form-group">
@@ -165,5 +187,82 @@
     <script src="js/jquery.timepicker.min.js"></script>
     <script src="js/scrollax.min.js"></script>
     <script src="js/main.js"></script>
+    
+    <script>
+      $(document).ready(function(){
+        // Khởi tạo datepicker cho ngày
+        $('#pickup_date_only, #return_date_only').datepicker({
+          format: 'dd/mm/yyyy',
+          autoclose: true,
+          todayHighlight: true,
+          startDate: new Date()
+        });
+        
+        // Khởi tạo timepicker cho giờ
+        $('#pickup_time_only, #return_time_only').timepicker({
+          timeFormat: 'H:i',
+          interval: 30,
+          minTime: '06:00',
+          maxTime: '22:00',
+          defaultTime: '09:00',
+          startTime: '06:00',
+          dynamic: false,
+          dropdown: true,
+          scrollbar: true,
+          show2400: false
+        });
+        
+        // Auto-fill từ params
+        var pickupDate = '${pickupDate}';
+        var dropoffDate = '${dropoffDate}';
+        var pickupTime = '${pickupTime}';
+        var pickupLocation = '${pickupLocation}';
+        var dropoffLocation = '${dropoffLocation}';
+        
+        if (pickupDate) {
+          $('#pickup_date_only').val(pickupDate);
+        }
+        if (dropoffDate) {
+          $('#return_date_only').val(dropoffDate);
+        }
+        if (pickupTime) {
+          $('#pickup_time_only').val(pickupTime);
+          $('#return_time_only').val(pickupTime); // Mặc định giờ trả = giờ nhận
+        }
+        if (pickupLocation) {
+          $('#pickup_location').val(pickupLocation);
+        }
+        if (dropoffLocation) {
+          $('#return_location').val(dropoffLocation);
+        }
+        
+        // Validation và combine trước khi submit
+        $('form').on('submit', function(e) {
+          var pickupDateVal = $('#pickup_date_only').val();
+          var pickupTimeVal = $('#pickup_time_only').val();
+          var returnDateVal = $('#return_date_only').val();
+          var returnTimeVal = $('#return_time_only').val();
+          
+          if (!pickupDateVal || !pickupTimeVal || !returnDateVal || !returnTimeVal) {
+            alert('Vui lòng chọn đầy đủ ngày giờ nhận và trả xe');
+            e.preventDefault();
+            return false;
+          }
+          
+          // Chuyển đổi dd/mm/yyyy + HH:MM sang yyyy-MM-ddTHH:MM
+          var pickupParts = pickupDateVal.split('/');
+          var returnParts = returnDateVal.split('/');
+          
+          var pickupFormatted = pickupParts[2] + '-' + pickupParts[1] + '-' + pickupParts[0] + 'T' + pickupTimeVal;
+          var returnFormatted = returnParts[2] + '-' + returnParts[1] + '-' + returnParts[0] + 'T' + returnTimeVal;
+          
+          $('#pickup_date_full').val(pickupFormatted);
+          $('#return_date_full').val(returnFormatted);
+          
+          // Xóa name của các field tạm
+          $('#pickup_date_only, #pickup_time_only, #return_date_only, #return_time_only').removeAttr('name');
+        });
+      });
+    </script>
 </body>
 </html>

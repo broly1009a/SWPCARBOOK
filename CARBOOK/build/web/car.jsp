@@ -270,6 +270,30 @@
         todayHighlight: true,
         startDate: new Date()
       });
+      
+      // Lấy search params từ URL hiện tại
+      var urlParams = new URLSearchParams(window.location.search);
+      var pickupLocation = urlParams.get('pickupLocation') || '';
+      var dropoffLocation = urlParams.get('dropoffLocation') || '';
+      var pickupDate = urlParams.get('pickupDate') || '';
+      var dropoffDate = urlParams.get('dropoffDate') || '';
+      var pickupTime = urlParams.get('pickupTime') || '';
+      
+      // Thêm params vào tất cả link "Đặt ngay"
+      $('.btn-primary[href*="booking?action=create"]').each(function() {
+        var href = $(this).attr('href');
+        var params = [];
+        
+        if (pickupLocation) params.push('pickupLocation=' + encodeURIComponent(pickupLocation));
+        if (dropoffLocation) params.push('dropoffLocation=' + encodeURIComponent(dropoffLocation));
+        if (pickupDate) params.push('pickupDate=' + encodeURIComponent(pickupDate));
+        if (dropoffDate) params.push('dropoffDate=' + encodeURIComponent(dropoffDate));
+        if (pickupTime) params.push('pickupTime=' + encodeURIComponent(pickupTime));
+        
+        if (params.length > 0) {
+          $(this).attr('href', href + '&' + params.join('&'));
+        }
+      });
     });
   </script>
     

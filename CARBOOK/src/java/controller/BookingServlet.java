@@ -140,6 +140,19 @@ public class BookingServlet extends HttpServlet {
                 return;
             }
             
+            // Forward search parameters to booking form
+            String pickupLocation = request.getParameter("pickupLocation");
+            String dropoffLocation = request.getParameter("dropoffLocation");
+            String pickupDate = request.getParameter("pickupDate");
+            String dropoffDate = request.getParameter("dropoffDate");
+            String pickupTime = request.getParameter("pickupTime");
+            
+            if (pickupLocation != null) request.setAttribute("pickupLocation", pickupLocation);
+            if (dropoffLocation != null) request.setAttribute("dropoffLocation", dropoffLocation);
+            if (pickupDate != null) request.setAttribute("pickupDate", pickupDate);
+            if (dropoffDate != null) request.setAttribute("dropoffDate", dropoffDate);
+            if (pickupTime != null) request.setAttribute("pickupTime", pickupTime);
+            
             System.out.println("Forwarding to booking-form.jsp");
             request.setAttribute("car", car);
             request.getRequestDispatcher("booking-form.jsp").forward(request, response);
