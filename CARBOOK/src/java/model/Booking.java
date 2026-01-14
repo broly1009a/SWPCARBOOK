@@ -33,6 +33,10 @@ public class Booking {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     
+    // Related objects
+    private Car car;
+    private User customer;
+    
     // Constructors
     public Booking() {
     }
@@ -261,6 +265,22 @@ public class Booking {
     
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    public Car getCar() {
+        return car;
+    }
+    
+    public void setCar(Car car) {
+        this.car = car;
+    }
+    
+    public User getCustomer() {
+        return customer;
+    }
+    
+    public void setCustomer(User customer) {
+        this.customer = customer;
     }
     
     @Override

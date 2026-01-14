@@ -249,12 +249,26 @@
             return false;
           }
           
-          // Chuyển đổi dd/mm/yyyy + HH:MM sang yyyy-MM-ddTHH:MM
+          // Chuyển đổi mm/dd/yyyy + HH:mm sang yyyy-MM-dd HH:mm:ss
+          // Bootstrap datepicker trả về mm/dd/yyyy theo US locale
           var pickupParts = pickupDateVal.split('/');
           var returnParts = returnDateVal.split('/');
           
-          var pickupFormatted = pickupParts[2] + '-' + pickupParts[1] + '-' + pickupParts[0] + 'T' + pickupTimeVal;
-          var returnFormatted = returnParts[2] + '-' + returnParts[1] + '-' + returnParts[0] + 'T' + returnTimeVal;
+          // pickupParts[0] = month, pickupParts[1] = day, pickupParts[2] = year
+          var pickupMonth = pickupParts[0].padStart(2, '0');
+          var pickupDay = pickupParts[1].padStart(2, '0');
+          var pickupYear = pickupParts[2];
+          
+          var returnMonth = returnParts[0].padStart(2, '0');
+          var returnDay = returnParts[1].padStart(2, '0');
+          var returnYear = returnParts[2];
+          
+          // Format: yyyy-MM-dd HH:mm:ss
+          var pickupFormatted = pickupYear + '-' + pickupMonth + '-' + pickupDay + ' ' + pickupTimeVal + ':00';
+          var returnFormatted = returnYear + '-' + returnMonth + '-' + returnDay + ' ' + returnTimeVal + ':00';
+          
+          console.log('Pickup formatted: ' + pickupFormatted);
+          console.log('Return formatted: ' + returnFormatted);
           
           $('#pickup_date_full').val(pickupFormatted);
           $('#return_date_full').val(returnFormatted);

@@ -8,7 +8,8 @@ import java.sql.Timestamp;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
+import model.Car;
+import model.User;
 /**
  * BookingDAO - Data Access Object for Booking management
  */
@@ -412,6 +413,30 @@ public class BookingDAO extends DBContext {
         booking.setNotes(rs.getString("Notes"));
         booking.setCreatedAt(rs.getTimestamp("CreatedAt"));
         booking.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
+        
+        // Load related objects
+        loadBookingRelatedData(booking);
+        
         return booking;
+    }
+    
+    /**
+     * Load related data for a booking (car, customer, owner)
+     */
+    private void loadBookingRelatedData(Booking booking) {
+        try {
+            // Load car
+            CarDAO carDAO = new CarDAO();
+            Car car = carDAO.getCarById(booking.getCarId());
+            booking.setCar(car);
+            
+            // Load customer
+            UserDAO userDAO = new UserDAO();
+            User customer = userDAO.getUserById(booking.getCustomerId());
+            booking.setCustomer(customer);
+            
+        } catch (Exception e) {
+            System.out.println("Error loading booking related data: " + e.getMessage());
+        }
     }
 }
