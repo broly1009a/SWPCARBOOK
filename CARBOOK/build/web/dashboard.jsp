@@ -15,16 +15,25 @@
     <%@ include file="includes/navbar.jsp" %>
     
     <section class="ftco-section">
-        <div class="container">
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <h2>Dashboard
-                        <c:if test="${dashboardType == 'admin'}"> - Quản trị viên</c:if>
-                        <c:if test="${dashboardType == 'owner'}"> - Chủ xe</c:if>
-                        <c:if test="${dashboardType == 'customer'}"> - Khách hàng</c:if>
-                    </h2>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 px-0">
+                    <%@ include file="includes/sidebar.jsp" %>
                 </div>
-            </div>
+                
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10">
+                    <div class="container-fluid">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <h2>Dashboard
+                                    <c:if test="${dashboardType == 'admin'}"> - Quản trị viên</c:if>
+                                    <c:if test="${dashboardType == 'owner'}"> - Chủ xe</c:if>
+                                    <c:if test="${dashboardType == 'customer'}"> - Khách hàng</c:if>
+                                </h2>
+                            </div>
+                        </div>
             
             <!-- Admin Dashboard -->
             <c:if test="${dashboardType == 'admin'}">
@@ -244,12 +253,28 @@
                     </div>
                 </div>
             </c:if>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
     
     <%@ include file="includes/footer.jsp" %>
     
-    <script src="js/jquery.min.js"></script>
+       <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+    <script src="js/jquery.animateNumber.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/jquery.timepicker.min.js"></script>
+    <script src="js/scrollax.min.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
