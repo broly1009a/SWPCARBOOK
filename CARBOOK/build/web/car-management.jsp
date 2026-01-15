@@ -47,23 +47,26 @@
                         <div class="form-group mr-2">
                             <select name="categoryId" class="form-control">
                                 <option value="">Tất cả danh mục</option>
-                                <c:forEach var="category" items="${categories}">
-                                    <option value="${category.categoryId}" ${param.categoryId == category.categoryId ? 'selected' : ''}>${category.name}</option>
-                                </c:forEach>
+                                <c:if test="${not empty categories}">
+                                    <c:forEach var="category" items="${categories}">
+                                        <option value="${category.categoryId}" 
+                                            <c:if test="${not empty param.categoryId and param.categoryId eq category.categoryId}">selected</c:if>>
+                                            ${category.categoryName}
+                                        </option>
+                                    </c:forEach>
+                                </c:if>
                             </select>
                         </div>
                         
                         <div class="form-group mr-2">
                             <select name="status" class="form-control">
                                 <option value="">Tất cả trạng thái</option>
-                                <option value="Available" ${param.status == 'Available' ? 'selected' : ''}>Sẵn sàng</option>
-                                <option value="Rented" ${param.status == 'Rented' ? 'selected' : ''}>Đã thuê</option>
-                                <option value="Maintenance" ${param.status == 'Maintenance' ? 'selected' : ''}>Bảo trì</option>
-                                <option value="Inactive" ${param.status == 'Inactive' ? 'selected' : ''}>Không hoạt động</option>
+                                <option value="Available" <c:if test="${param.status eq 'Available'}">selected</c:if>>Sẵn sàng</option>
+                                <option value="Rented" <c:if test="${param.status eq 'Rented'}">selected</c:if>>Đã thuê</option>
+                                <option value="Maintenance" <c:if test="${param.status eq 'Maintenance'}">selected</c:if>>Bảo trì</option>
+                                <option value="Inactive" <c:if test="${param.status eq 'Inactive'}">selected</c:if>>Không hoạt động</option>
                             </select>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Lọc</button>
+                        </div>                        <button type="submit" class="btn btn-primary">Lọc</button>
                         <a href="car-management?action=list" class="btn btn-secondary ml-2">Xóa lọc</a>
                     </form>
                 </div>
@@ -97,7 +100,23 @@
                                             <tr>
                                                 <td>${car.carId}</td>
                                                 <td><strong>${car.licensePlate}</strong></td>
-                                                <td>${car.model.brand.name} ${car.model.name}</td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${car.model != null}">
+                                                            <c:choose>
+                                                                <c:when test="${car.model.brand != null}">
+                                                                    ${car.model.brand.name} ${car.model.name}
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    ${car.model.name}
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="text-muted">Chưa có thông tin</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
                                                 <td>${car.color}</td>
                                                 <td>${car.year}</td>
                                                 <td>${car.seats}</td>
@@ -108,7 +127,7 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-info" onclick="editCar(${car.carId})">Sửa</button>
+                                                    <a href="car-management?action=edit&id=${car.carId}" class="btn btn-sm btn-info">Sửa</a>
                                                     <a href="car-management?action=delete&id=${car.carId}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa xe này?')">Xóa</a>
                                                 </td>
                                             </tr>
@@ -164,7 +183,7 @@
                                     <select class="form-control" name="categoryId" id="categoryId" required>
                                         <option value="">Chọn danh mục</option>
                                         <c:forEach var="category" items="${categories}">
-                                            <option value="${category.categoryId}">${category.name}</option>
+                                            <option value="${category.categoryId}">${category.categoryName}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
@@ -259,32 +278,6 @@
             document.getElementById('formAction').value = 'create';
             document.getElementById('carId').value = '';
             document.getElementById('modalTitle').textContent = 'Thêm xe mới';
-        }
-        
-        function editCar(carId) {
-            fetch('car-management?action=get&id=' + carId)
-                .then(response => response.json())
-                .then(car => {
-                    document.getElementById('formAction').value = 'edit';
-                    document.getElementById('carId').value = car.carId;
-                    document.getElementById('licensePlate').value = car.licensePlate;
-                    document.getElementById('categoryId').value = car.categoryId;
-                    document.getElementById('brandId').value = car.model.brandId;
-                    loadModels(car.modelId);
-                    document.getElementById('color').value = car.color || '';
-                    document.getElementById('year').value = car.year || '';
-                    document.getElementById('seats').value = car.seats || '';
-                    document.getElementById('transmission').value = car.transmission || '';
-                    document.getElementById('fuelType').value = car.fuelType || '';
-                    document.getElementById('pricePerDay').value = car.pricePerDay;
-                    document.getElementById('status').value = car.status;
-                    document.getElementById('description').value = car.description || '';
-                    document.getElementById('modalTitle').textContent = 'Sửa thông tin xe';
-                    $('#carModal').modal('show');
-                })
-                .catch(error => {
-                    alert('Không thể tải thông tin xe: ' + error);
-                });
         }
         
         function loadModels(selectedModelId) {

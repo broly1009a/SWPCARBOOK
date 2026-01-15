@@ -102,13 +102,25 @@ public class CarManagementServlet extends HttpServlet {
         // Admin sees all cars, CarOwner sees only their cars
         if (user.getRoleId() == 1) { // Admin
             cars = carDAO.getAllCars();
+            System.out.println("Admin - Loading all cars: " + (cars != null ? cars.size() : "null"));
         } else if (user.getRoleId() == 2) { // CarOwner
             cars = carDAO.getCarsByOwnerId(user.getUserId());
+            System.out.println("CarOwner - Loading cars for userId " + user.getUserId() + ": " + (cars != null ? cars.size() : "null"));
         } else {
             cars = carDAO.getAvailableCars();
+            System.out.println("Customer - Loading available cars: " + (cars != null ? cars.size() : "null"));
         }
         
+        // Load brands and categories for filters and form
+        List<CarBrand> brands = brandDAO.getAllBrands();
+        List<CarCategory> categories = categoryDAO.getAllCategories();
+        
+        System.out.println("Brands loaded: " + (brands != null ? brands.size() : "null"));
+        System.out.println("Categories loaded: " + (categories != null ? categories.size() : "null"));
+        
         request.setAttribute("cars", cars);
+        request.setAttribute("brands", brands);
+        request.setAttribute("categories", categories);
         request.getRequestDispatcher("car-management.jsp").forward(request, response);
     }
 

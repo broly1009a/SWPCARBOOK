@@ -369,16 +369,26 @@ public class CarDAO extends DBContext {
     private void loadCarRelatedData(Car car) {
         try {
             // Load model and brand
-            CarModel model = modelDAO.getModelById(car.getModelId());
-            if (model != null) {
-                CarBrand brand = brandDAO.getBrandById(model.getBrandId());
-                model.setBrand(brand);
-                car.setModel(model);
+            if (car.getModelId() > 0) {
+                CarModel model = modelDAO.getModelById(car.getModelId());
+                if (model != null) {
+                    if (model.getBrandId() > 0) {
+                        CarBrand brand = brandDAO.getBrandById(model.getBrandId());
+                        if (brand != null) {
+                            model.setBrand(brand);
+                        }
+                    }
+                    car.setModel(model);
+                }
             }
             
             // Load category
-            CarCategory category = categoryDAO.getCategoryById(car.getCategoryId());
-            car.setCategory(category);
+            if (car.getCategoryId() > 0) {
+                CarCategory category = categoryDAO.getCategoryById(car.getCategoryId());
+                if (category != null) {
+                    car.setCategory(category);
+                }
+            }
             
             // Load first image
             String imageSql = "SELECT TOP 1 ImageURL FROM CarImages WHERE CarID = ? ORDER BY DisplayOrder";
@@ -390,6 +400,7 @@ public class CarDAO extends DBContext {
             }
         } catch (SQLException e) {
             System.out.println("Error loading car related data: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
