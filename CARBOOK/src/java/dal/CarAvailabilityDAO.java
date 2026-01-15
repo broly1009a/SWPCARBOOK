@@ -19,9 +19,12 @@ public class CarAvailabilityDAO extends DBContext {
      */
     public List<CarAvailability> getAllAvailability() {
         List<CarAvailability> list = new ArrayList<>();
-        String sql = "SELECT ca.*, c.LicensePlate, c.Name AS CarName " +
+        String sql = "SELECT ca.*, c.LicensePlate, " +
+                     "CONCAT(cb.BrandName, ' ', cm.ModelName) AS CarName " +
                      "FROM CarAvailability ca " +
                      "LEFT JOIN Cars c ON ca.CarID = c.CarID " +
+                     "LEFT JOIN CarModels cm ON c.ModelID = cm.ModelID " +
+                     "LEFT JOIN CarBrands cb ON cm.BrandID = cb.BrandID " +
                      "ORDER BY ca.StartDate DESC";
         
         try {
@@ -43,9 +46,12 @@ public class CarAvailabilityDAO extends DBContext {
      * @return CarAvailability object or null
      */
     public CarAvailability getAvailabilityById(int availabilityId) {
-        String sql = "SELECT ca.*, c.LicensePlate, c.Name AS CarName " +
+        String sql = "SELECT ca.*, c.LicensePlate, " +
+                     "CONCAT(cb.BrandName, ' ', cm.ModelName) AS CarName " +
                      "FROM CarAvailability ca " +
                      "LEFT JOIN Cars c ON ca.CarID = c.CarID " +
+                     "LEFT JOIN CarModels cm ON c.ModelID = cm.ModelID " +
+                     "LEFT JOIN CarBrands cb ON cm.BrandID = cb.BrandID " +
                      "WHERE ca.AvailabilityID = ?";
         
         try {
@@ -69,9 +75,12 @@ public class CarAvailabilityDAO extends DBContext {
      */
     public List<CarAvailability> getAvailabilityByCarId(int carId) {
         List<CarAvailability> list = new ArrayList<>();
-        String sql = "SELECT ca.*, c.LicensePlate, c.Name AS CarName " +
+        String sql = "SELECT ca.*, c.LicensePlate, " +
+                     "CONCAT(cb.BrandName, ' ', cm.ModelName) AS CarName " +
                      "FROM CarAvailability ca " +
                      "LEFT JOIN Cars c ON ca.CarID = c.CarID " +
+                     "LEFT JOIN CarModels cm ON c.ModelID = cm.ModelID " +
+                     "LEFT JOIN CarBrands cb ON cm.BrandID = cb.BrandID " +
                      "WHERE ca.CarID = ? " +
                      "ORDER BY ca.StartDate DESC";
         
@@ -96,9 +105,12 @@ public class CarAvailabilityDAO extends DBContext {
      */
     public List<CarAvailability> getBlockedDatesByCarId(int carId) {
         List<CarAvailability> list = new ArrayList<>();
-        String sql = "SELECT ca.*, c.LicensePlate, c.Name AS CarName " +
+        String sql = "SELECT ca.*, c.LicensePlate, " +
+                     "CONCAT(cb.BrandName, ' ', cm.ModelName) AS CarName " +
                      "FROM CarAvailability ca " +
                      "LEFT JOIN Cars c ON ca.CarID = c.CarID " +
+                     "LEFT JOIN CarModels cm ON c.ModelID = cm.ModelID " +
+                     "LEFT JOIN CarBrands cb ON cm.BrandID = cb.BrandID " +
                      "WHERE ca.CarID = ? AND ca.IsAvailable = 0 " +
                      "ORDER BY ca.StartDate";
         
@@ -231,9 +243,12 @@ public class CarAvailabilityDAO extends DBContext {
      */
     public List<CarAvailability> getUpcomingBlockedDates(int carId) {
         List<CarAvailability> list = new ArrayList<>();
-        String sql = "SELECT ca.*, c.LicensePlate, c.Name AS CarName " +
+        String sql = "SELECT ca.*, c.LicensePlate, " +
+                     "CONCAT(cb.BrandName, ' ', cm.ModelName) AS CarName " +
                      "FROM CarAvailability ca " +
                      "LEFT JOIN Cars c ON ca.CarID = c.CarID " +
+                     "LEFT JOIN CarModels cm ON c.ModelID = cm.ModelID " +
+                     "LEFT JOIN CarBrands cb ON cm.BrandID = cb.BrandID " +
                      "WHERE ca.CarID = ? AND ca.IsAvailable = 0 " +
                      "AND ca.EndDate >= CAST(GETDATE() AS DATE) " +
                      "ORDER BY ca.StartDate";

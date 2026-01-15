@@ -513,6 +513,31 @@ public class CarDAO extends DBContext {
                 }
             }
             
+            // Check for active maintenance (In Progress or Scheduled)
+            String sqlMaintenance = "SELECT COUNT(*) FROM MaintenanceRecords " +
+                     "WHERE CarID = ? " +
+                     "AND Status IN ('Scheduled', 'In Progress') " +
+                     "AND ((CAST(ServiceDate AS DATE) <= ? AND CAST(ISNULL(NextServiceDate, ServiceDate) AS DATE) >= ?) " +
+                     "OR (CAST(ServiceDate AS DATE) <= ? AND CAST(ISNULL(NextServiceDate, ServiceDate) AS DATE) >= ?) " +
+                     "OR (CAST(ServiceDate AS DATE) >= ? AND CAST(ServiceDate AS DATE) <= ?))";
+            
+            stm = connection.prepareStatement(sqlMaintenance);
+            stm.setInt(1, carId);
+            stm.setDate(2, dropoffDate);
+            stm.setDate(3, dropoffDate);
+            stm.setDate(4, pickupDate);
+            stm.setDate(5, pickupDate);
+            stm.setDate(6, pickupDate);
+            stm.setDate(7, dropoffDate);
+            
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                int maintenanceCount = rs.getInt(1);
+                if (maintenanceCount > 0) {
+                    return false; // Has maintenance scheduled
+                }
+            }
+            
             return true; // Available if no conflicts and not blocked
             
         } catch (SQLException e) {

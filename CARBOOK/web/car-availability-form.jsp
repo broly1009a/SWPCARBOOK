@@ -29,6 +29,16 @@
                     
                     <div class="card">
                         <div class="card-body">
+                            <!-- Debug info -->
+                            <c:if test="${empty cars}">
+                                <div class="alert alert-warning">
+                                    Không có xe nào trong hệ thống hoặc danh sách xe chưa được load.
+                                </div>
+                            </c:if>
+                            <c:if test="${not empty cars}">
+                                <p class="text-muted">Có ${cars.size()} xe trong danh sách</p>
+                            </c:if>
+                            
                             <form action="car-availability" method="post">
                                 <input type="hidden" name="action" value="${not empty availability ? 'update' : 'create'}">
                                 <c:if test="${not empty availability}">
@@ -45,7 +55,14 @@
                                             <option value="${car.carId}" 
                                                 ${(not empty availability && availability.carId == car.carId) || 
                                                   (not empty selectedCarId && selectedCarId == car.carId) ? 'selected' : ''}>
-                                                ${car.name} (${car.licensePlate})
+                                                <c:choose>
+                                                    <c:when test="${not empty car.model && not empty car.model.brand}">
+                                                        ${car.model.brand.brandName} ${car.model.modelName} (${car.licensePlate})
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        ${car.licensePlate}
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </option>
                                         </c:forEach>
                                     </select>
@@ -133,8 +150,21 @@
     
     <%@ include file="includes/footer.jsp" %>
     
-    <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+    <script src="js/jquery.animateNumber.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/jquery.timepicker.min.js"></script>
+    <script src="js/scrollax.min.js"></script>
+    <script src="js/main.js"></script>
     
     <script>
         // Validate dates

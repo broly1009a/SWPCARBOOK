@@ -2,6 +2,7 @@ package controller;
 
 import dal.CarAvailabilityDAO;
 import dal.CarDAO;
+import dal.BookingDAO;
 import model.CarAvailability;
 import model.Car;
 import model.User;
@@ -23,6 +24,7 @@ public class CarAvailabilityServlet extends HttpServlet {
 
     private CarAvailabilityDAO availabilityDAO = new CarAvailabilityDAO();
     private CarDAO carDAO = new CarDAO();
+    private BookingDAO bookingDAO = new BookingDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -207,6 +209,20 @@ public class CarAvailabilityServlet extends HttpServlet {
                 return;
             }
             
+            // Check if marking as unavailable and there are existing bookings
+            if (!isAvailable && bookingDAO.hasActiveBookingInPeriod(carId, startDate, endDate)) {
+                request.setAttribute("error", "Không thể đặt lịch không khả dụng vì đã có booking trong khoảng thời gian này. Vui lòng hủy booking trước.");
+                showCreateForm(request, response, user);
+                return;
+            }
+            
+            // Check if marking as unavailable and there is scheduled/active maintenance
+            if (!isAvailable && bookingDAO.hasActiveMaintenanceInPeriod(carId, startDate, endDate)) {
+                request.setAttribute("error", "Xe đã có lịch bảo trì trong khoảng thời gian này. Vui lòng kiểm tra lại lịch bảo trì.");
+                showCreateForm(request, response, user);
+                return;
+            }
+            
             // Create availability
             CarAvailability availability = new CarAvailability();
             availability.setCarId(carId);
@@ -246,6 +262,20 @@ public class CarAvailabilityServlet extends HttpServlet {
             // Validate dates
             if (endDate.before(startDate)) {
                 request.setAttribute("error", "Ngày kết thúc phải sau ngày bắt đầu");
+                showEditForm(request, response, user);
+                return;
+            }
+            
+            // Check if marking as unavailable and there are existing bookings
+            if (!isAvailable && bookingDAO.hasActiveBookingInPeriod(carId, startDate, endDate)) {
+                request.setAttribute("error", "Không thể đặt lịch không khả dụng vì đã có booking trong khoảng thời gian này. Vui lòng hủy booking trước.");
+                showEditForm(request, response, user);
+                return;
+            }
+            
+            // Check if marking as unavailable and there is scheduled/active maintenance
+            if (!isAvailable && bookingDAO.hasActiveMaintenanceInPeriod(carId, startDate, endDate)) {
+                request.setAttribute("error", "Xe đã có lịch bảo trì trong khoảng thời gian này. Vui lòng kiểm tra lại lịch bảo trì.");
                 showEditForm(request, response, user);
                 return;
             }
