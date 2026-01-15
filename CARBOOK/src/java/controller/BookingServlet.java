@@ -196,7 +196,7 @@ public class BookingServlet extends HttpServlet {
                 return;
             }
             
-            // Parse format: yyyy-MM-dd HH:mm:ss
+            // Parse format: yyyy-MM-dd HH:mm:ss (already formatted from form)
             Timestamp pickupDate = Timestamp.valueOf(pickupDateStr);
             Timestamp returnDate = Timestamp.valueOf(returnDateStr);
             

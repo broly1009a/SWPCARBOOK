@@ -75,16 +75,16 @@
 			    			<div class="d-flex">
 			    				<div class="form-group mr-2">
 			                <label for="" class="label">Ngày nhận</label>
-			                <input type="date" name="pickupDate" class="form-control" id="book_pick_date" autocomplete="off">
+			                <input type="text" name="pickupDate" class="form-control" id="book_pick_date" placeholder="dd/mm/yyyy" autocomplete="off">
 			              </div>
 			              <div class="form-group ml-2">
 			                <label for="" class="label">Ngày trả</label>
-			                <input type="date" name="dropoffDate" class="form-control" id="book_off_date" autocomplete="off">
+			                <input type="text" name="dropoffDate" class="form-control" id="book_off_date" placeholder="dd/mm/yyyy" autocomplete="off">
 			              </div>
 		              </div>
 		              <div class="form-group">
 		                <label for="" class="label">Giờ nhận xe</label>
-		                <input type="time" name="pickupTime" class="form-control" id="time_pick" autocomplete="off">
+		                <input type="text" name="pickupTime" class="form-control" id="time_pick" placeholder="HH:MM" autocomplete="off">
 		              </div>
 			            <div class="form-group">
 			              <input type="submit" value="Tìm xe khả dụng" class="btn btn-secondary py-3 px-4">
@@ -518,19 +518,27 @@
   
   <script>
     $(document).ready(function(){
-      // Set minimum date to today for date inputs
-      var today = new Date().toISOString().split('T')[0];
-      $('#book_pick_date, #book_off_date').attr('min', today);
-      
-      // Update minimum return date when pickup date changes
-      $('#book_pick_date').on('change', function() {
-        $('#book_off_date').attr('min', $(this).val());
+      // Khởi tạo datepicker cho ngày nhận và ngày trả
+      $('#book_pick_date, #book_off_date').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+        todayHighlight: true,
+        startDate: new Date()
       });
       
-      // Set default time to 09:00
-      if (!$('#time_pick').val()) {
-        $('#time_pick').val('09:00');
-      }
+      // Khởi tạo timepicker cho giờ nhận xe
+      $('#time_pick').timepicker({
+        timeFormat: 'H:i',
+        interval: 30,
+        minTime: '06:00',
+        maxTime: '22:00',
+        defaultTime: '09:00',
+        startTime: '06:00',
+        dynamic: false,
+        dropdown: true,
+        scrollbar: true,
+        show2400: false
+      });
       
       // Lưu thông tin tìm kiếm vào sessionStorage khi người dùng điền form
       $('.request-form').on('submit', function() {
