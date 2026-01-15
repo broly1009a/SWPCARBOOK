@@ -20,7 +20,10 @@ public class PaymentDAO extends DBContext {
      */
     public List<Payment> getAllPayments() {
         List<Payment> payments = new ArrayList<>();
-        String sql = "SELECT * FROM Payments ORDER BY PaymentDate DESC";
+        String sql = "SELECT p.*, pm.MethodName " +
+                     "FROM Payments p " +
+                     "LEFT JOIN PaymentMethods pm ON p.PaymentMethodID = pm.PaymentMethodID " +
+                     "ORDER BY p.PaymentDate DESC";
         
         try {
             PreparedStatement stm = connection.prepareStatement(sql);
@@ -41,7 +44,10 @@ public class PaymentDAO extends DBContext {
      * @return Payment object or null
      */
     public Payment getPaymentById(int paymentId) {
-        String sql = "SELECT * FROM Payments WHERE PaymentID = ?";
+        String sql = "SELECT p.*, pm.MethodName " +
+                     "FROM Payments p " +
+                     "LEFT JOIN PaymentMethods pm ON p.PaymentMethodID = pm.PaymentMethodID " +
+                     "WHERE p.PaymentID = ?";
         
         try {
             PreparedStatement stm = connection.prepareStatement(sql);
@@ -63,7 +69,10 @@ public class PaymentDAO extends DBContext {
      * @return Payment object or null
      */
     public Payment getPaymentByReference(String paymentReference) {
-        String sql = "SELECT * FROM Payments WHERE PaymentReference = ?";
+        String sql = "SELECT p.*, pm.MethodName " +
+                     "FROM Payments p " +
+                     "LEFT JOIN PaymentMethods pm ON p.PaymentMethodID = pm.PaymentMethodID " +
+                     "WHERE p.PaymentReference = ?";
         
         try {
             PreparedStatement stm = connection.prepareStatement(sql);
@@ -86,7 +95,10 @@ public class PaymentDAO extends DBContext {
      */
     public List<Payment> getPaymentsByBookingId(int bookingId) {
         List<Payment> payments = new ArrayList<>();
-        String sql = "SELECT * FROM Payments WHERE BookingID = ? ORDER BY PaymentDate DESC";
+        String sql = "SELECT p.*, pm.MethodName " +
+                     "FROM Payments p " +
+                     "LEFT JOIN PaymentMethods pm ON p.PaymentMethodID = pm.PaymentMethodID " +
+                     "WHERE p.BookingID = ? ORDER BY p.PaymentDate DESC";
         
         try {
             PreparedStatement stm = connection.prepareStatement(sql);
@@ -109,7 +121,10 @@ public class PaymentDAO extends DBContext {
      */
     public List<Payment> getPaymentsByStatus(String status) {
         List<Payment> payments = new ArrayList<>();
-        String sql = "SELECT * FROM Payments WHERE Status = ? ORDER BY PaymentDate DESC";
+        String sql = "SELECT p.*, pm.MethodName " +
+                     "FROM Payments p " +
+                     "LEFT JOIN PaymentMethods pm ON p.PaymentMethodID = pm.PaymentMethodID " +
+                     "WHERE p.Status = ? ORDER BY p.PaymentDate DESC";
         
         try {
             PreparedStatement stm = connection.prepareStatement(sql);
@@ -316,6 +331,8 @@ public class PaymentDAO extends DBContext {
         payment.setNotes(rs.getString("Notes"));
         payment.setCreatedAt(rs.getTimestamp("CreatedAt"));
         payment.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
+        // Set payment method name from JOIN
+        payment.setPaymentMethod(rs.getString("MethodName"));
         return payment;
     }
 }

@@ -47,7 +47,7 @@
                             
                             <h6>Thông tin thanh toán</h6>
                             <p>
-                                <strong>Phương thức:</strong> ${payment.paymentMethod.name}<br>
+                                <strong>Phương thức:</strong> ${payment.paymentMethod}<br>
                                 <strong>Ngày thanh toán:</strong> <fmt:formatDate value="${payment.paymentDate}" pattern="dd/MM/yyyy HH:mm"/><br>
                                 <strong>Số tiền:</strong> <fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="₫"/>
                             </p>
@@ -96,12 +96,11 @@
                         <div class="card-body">
                             <p><small>
                                 <strong>Ngày tạo:</strong> <fmt:formatDate value="${payment.createdAt}" pattern="dd/MM/yyyy HH:mm"/><br>
-                                <c:if test="${not empty payment.completedAt}">
-                                    <strong>Hoàn thành:</strong> <fmt:formatDate value="${payment.completedAt}" pattern="dd/MM/yyyy HH:mm"/><br>
+                                <c:if test="${not empty payment.updatedAt}">
+                                    <strong>Cập nhật:</strong> <fmt:formatDate value="${payment.updatedAt}" pattern="dd/MM/yyyy HH:mm"/><br>
                                 </c:if>
-                                <c:if test="${not empty payment.failedAt}">
-                                    <strong>Thất bại:</strong> <fmt:formatDate value="${payment.failedAt}" pattern="dd/MM/yyyy HH:mm"/><br>
-                                    <strong>Lý do:</strong> ${payment.failureReason}<br>
+                                <c:if test="${not empty payment.paymentDate}">
+                                    <strong>Thanh toán:</strong> <fmt:formatDate value="${payment.paymentDate}" pattern="dd/MM/yyyy HH:mm"/><br>
                                 </c:if>
                             </small></p>
                         </div>
@@ -141,7 +140,20 @@
     
     <%@ include file="includes/footer.jsp" %>
     
-    <script src="js/jquery.min.js"></script>
+      <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+    <script src="js/jquery.animateNumber.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/jquery.timepicker.min.js"></script>
+    <script src="js/scrollax.min.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
