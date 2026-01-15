@@ -4,6 +4,7 @@ import model.Car;
 import model.CarModel;
 import model.CarCategory;
 import model.CarBrand;
+import model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -387,6 +388,15 @@ public class CarDAO extends DBContext {
                 CarCategory category = categoryDAO.getCategoryById(car.getCategoryId());
                 if (category != null) {
                     car.setCategory(category);
+                }
+            }
+            
+            // Load owner
+            if (car.getOwnerId() > 0) {
+                UserDAO userDAO = new UserDAO();
+                User owner = userDAO.getUserById(car.getOwnerId());
+                if (owner != null) {
+                    car.setOwner(owner);
                 }
             }
             

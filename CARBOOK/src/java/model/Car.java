@@ -35,6 +35,7 @@ public class Car {
     // Related objects for display
     private CarModel model;
     private CarCategory category;
+    private User owner;
     private String imageUrl;
     
     // Constructors
@@ -261,6 +262,14 @@ public class Car {
     
     public void setCategory(CarCategory category) {
         this.category = category;
+    }
+    
+    public User getOwner() {
+        return owner;
+    }
+    
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
     
     public String getImageUrl() {

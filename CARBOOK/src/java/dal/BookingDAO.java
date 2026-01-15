@@ -435,6 +435,12 @@ public class BookingDAO extends DBContext {
             User customer = userDAO.getUserById(booking.getCustomerId());
             booking.setCustomer(customer);
             
+            // Load car owner if car exists
+            if (car != null && car.getOwnerId() > 0) {
+                User owner = userDAO.getUserById(car.getOwnerId());
+                car.setOwner(owner);
+            }
+            
         } catch (Exception e) {
             System.out.println("Error loading booking related data: " + e.getMessage());
         }
