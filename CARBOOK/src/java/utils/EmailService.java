@@ -2,8 +2,8 @@ package utils;
 
 import java.util.Properties;
 import java.util.Random;
-import javax.mail.*;
-import javax.mail.internet.*;
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
 
 /**
  * EmailService - Handles email sending functionality
@@ -180,7 +180,7 @@ public class EmailService {
                 "<li>Đánh giá và nhận xét dịch vụ</li>" +
                 "</ul>" +
                 "<div style='text-align: center; margin: 30px 0;'>" +
-                "<a href='http://localhost:8080/CARBOOK' style='background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;'>Bắt đầu ngay</a>" +
+                "<a href='http://localhost:9999/CARBOOK' style='background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;'>Bắt đầu ngay</a>" +
                 "</div>" +
                 "<p>Nếu bạn có bất kỳ câu hỏi nào, đừng ngại liên hệ với chúng tôi.</p>" +
                 "<hr style='margin: 30px 0; border: none; border-top: 1px solid #ddd;'>" +
@@ -194,7 +194,7 @@ public class EmailService {
      * Build HTML content for password reset email
      */
     private static String buildPasswordResetEmailHTML(String username, String resetToken) {
-        String resetLink = "http://localhost:8080/CARBOOK/reset-password?token=" + resetToken;
+        String resetLink = "http://localhost:9999/CARBOOK/reset-password?token=" + resetToken;
         
         return "<!DOCTYPE html>" +
                 "<html>" +

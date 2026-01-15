@@ -33,9 +33,9 @@
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
-                    <li class="nav-item"><a href="car.html" class="nav-link">Cars</a></li>
+                    <li class="nav-item"><a href="about.jsp" class="nav-link">About</a></li>
+                    <li class="nav-item"><a href="services.jsp" class="nav-link">Services</a></li>
+                    <li class="nav-item"><a href="cars" class="nav-link">Cars</a></li>
                     <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
                     <li class="nav-item active"><a href="register" class="nav-link">Register</a></li>
                 </ul>

@@ -31,31 +31,7 @@
   </head>
   <body>
     
-	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Car<span>Book</span></a>
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span> Menu
-	      </button>
-
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item active"><a href="home" class="nav-link">Trang chủ</a></li>
-	          <li class="nav-item"><a href="cars" class="nav-link">Xe cho thuê</a></li>
-	          <c:choose>
-	            <c:when test="${not empty sessionScope.user}">
-	              <li class="nav-item"><a href="bookings" class="nav-link">Đặt xe của tôi</a></li>
-	              <li class="nav-item"><a href="logout" class="nav-link">Đăng xuất (${sessionScope.user.fullName})</a></li>
-	            </c:when>
-	            <c:otherwise>
-	              <li class="nav-item"><a href="login.jsp" class="nav-link">Đăng nhập</a></li>
-	              <li class="nav-item"><a href="register.jsp" class="nav-link">Đăng ký</a></li>
-	            </c:otherwise>
-	          </c:choose>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
+	  <%@ include file="includes/navbar.jsp" %>
     <!-- END nav -->
     
     <div class="hero-wrap ftco-degree-bg" style="background-image: url('images/bg_1.jpg');" data-stellar-background-ratio="0.5">
