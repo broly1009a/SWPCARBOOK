@@ -167,7 +167,7 @@
     </style>
 </head>
 <body>
-    <%@ include file="includes/navbar.jsp" %>
+   
 
     <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('images/bg_3.jpg');" data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
@@ -196,7 +196,7 @@
                     </c:choose>
                 </h4>
                 <p><strong>Biển số:</strong> ${car.licensePlate}</p>
-                <p><strong>Năm sản xuất:</strong> ${car.year}</p>
+                <p><strong>Năm sản xuất:</strong> ${car.model.year}</p>
                 <p><strong>Tổng số ảnh:</strong> ${images.size()}</p>
             </div>
 
@@ -310,7 +310,7 @@
         </div>
     </section>
 
-    <%@ include file="includes/footer.jsp" %>
+  
 
     <!-- loader -->
     <div id="ftco-loader" class="show fullscreen">
