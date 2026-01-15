@@ -27,11 +27,19 @@
                 </div>
             </div>
             
-            <c:if test="${not empty error}">
-                <div class="alert alert-danger">${error}</div>
+            <c:if test="${not empty sessionScope.success}">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${sessionScope.success}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+                <c:remove var="success" scope="session"/>
             </c:if>
-            <c:if test="${not empty success}">
-                <div class="alert alert-success">${success}</div>
+            <c:if test="${not empty sessionScope.error}">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${sessionScope.error}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+                <c:remove var="error" scope="session"/>
             </c:if>
             
             <!-- Filters -->
@@ -47,28 +55,30 @@
                         <div class="form-group mr-2">
                             <select name="categoryId" class="form-control">
                                 <option value="">Tất cả danh mục</option>
-                                <c:forEach var="category" items="${categories}">
-                                    <option value="${category.categoryId}" ${param.categoryId == category.categoryId ? 'selected' : ''}>${category.name}</option>
-                                </c:forEach>
+                                <c:if test="${not empty categories}">
+                                    <c:forEach var="category" items="${categories}">
+                                        <option value="${category.categoryId}" 
+                                            <c:if test="${not empty param.categoryId and param.categoryId eq category.categoryId}">selected</c:if>>
+                                            ${category.categoryName}
+                                        </option>
+                                    </c:forEach>
+                                </c:if>
                             </select>
                         </div>
                         
                         <div class="form-group mr-2">
                             <select name="status" class="form-control">
                                 <option value="">Tất cả trạng thái</option>
-                                <option value="Available" ${param.status == 'Available' ? 'selected' : ''}>Sẵn sàng</option>
-                                <option value="Rented" ${param.status == 'Rented' ? 'selected' : ''}>Đã thuê</option>
-                                <option value="Maintenance" ${param.status == 'Maintenance' ? 'selected' : ''}>Bảo trì</option>
-                                <option value="Inactive" ${param.status == 'Inactive' ? 'selected' : ''}>Không hoạt động</option>
+                                <option value="Available" <c:if test="${param.status eq 'Available'}">selected</c:if>>Sẵn sàng</option>
+                                <option value="Rented" <c:if test="${param.status eq 'Rented'}">selected</c:if>>Đã thuê</option>
+                                <option value="Maintenance" <c:if test="${param.status eq 'Maintenance'}">selected</c:if>>Bảo trì</option>
+                                <option value="Inactive" <c:if test="${param.status eq 'Inactive'}">selected</c:if>>Không hoạt động</option>
                             </select>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Lọc</button>
+                        </div>                        <button type="submit" class="btn btn-primary">Lọc</button>
                         <a href="car-management?action=list" class="btn btn-secondary ml-2">Xóa lọc</a>
                     </form>
                 </div>
             </div>
-            
             <!-- Cars table -->
             <div class="card">
                 <div class="card-body">
@@ -95,11 +105,27 @@
                                     <tbody>
                                         <c:forEach var="car" items="${cars}">
                                             <tr>
-                                                <td>${car.carId}</td>
+                                               <td>${car.carId}</td>
                                                 <td><strong>${car.licensePlate}</strong></td>
-                                                <td>${car.model.brand.name} ${car.model.name}</td>
+                                                  <td>
+                                                    <c:choose>
+                                                        <c:when test="${car.model != null}">
+                                                            <c:choose>
+                                                                <c:when test="${car.model.brand != null}">
+                                                                    ${car.model.brand.brandName} ${car.model.modelName}
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    ${car.model.modelName}
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="text-muted">Chưa có thông tin</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
                                                 <td>${car.color}</td>
-                                                <td>${car.year}</td>
+                                                <td>${car.model.year}</td>
                                                 <td>${car.seats}</td>
                                                 <td><fmt:formatNumber value="${car.pricePerDay}" type="currency" currencySymbol="₫"/></td>
                                                 <td>
@@ -108,7 +134,7 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-info" onclick="editCar(${car.carId})">Sửa</button>
+                                                    <a href="car-management?action=edit&id=${car.carId}" class="btn btn-sm btn-info">Sửa</a>
                                                     <a href="car-management?action=delete&id=${car.carId}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa xe này?')">Xóa</a>
                                                 </td>
                                             </tr>
@@ -164,7 +190,7 @@
                                     <select class="form-control" name="categoryId" id="categoryId" required>
                                         <option value="">Chọn danh mục</option>
                                         <c:forEach var="category" items="${categories}">
-                                            <option value="${category.categoryId}">${category.name}</option>
+                                            <option value="${category.categoryId}">${category.categoryName}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
@@ -174,7 +200,7 @@
                                     <select class="form-control" name="brandId" id="brandId" required onchange="loadModels()">
                                         <option value="">Chọn hãng</option>
                                         <c:forEach var="brand" items="${brands}">
-                                            <option value="${brand.brandId}">${brand.name}</option>
+                                            <option value="${brand.brandId}">${brand.brandName}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
@@ -252,39 +278,26 @@
     <%@ include file="includes/footer.jsp" %>
     
     <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+    <script src="js/jquery.animateNumber.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/jquery.timepicker.min.js"></script>
+    <script src="js/scrollax.min.js"></script>
+    <script src="js/main.js"></script>
     <script>
         function resetCarForm() {
             document.getElementById('carForm').reset();
             document.getElementById('formAction').value = 'create';
             document.getElementById('carId').value = '';
             document.getElementById('modalTitle').textContent = 'Thêm xe mới';
-        }
-        
-        function editCar(carId) {
-            fetch('car-management?action=get&id=' + carId)
-                .then(response => response.json())
-                .then(car => {
-                    document.getElementById('formAction').value = 'edit';
-                    document.getElementById('carId').value = car.carId;
-                    document.getElementById('licensePlate').value = car.licensePlate;
-                    document.getElementById('categoryId').value = car.categoryId;
-                    document.getElementById('brandId').value = car.model.brandId;
-                    loadModels(car.modelId);
-                    document.getElementById('color').value = car.color || '';
-                    document.getElementById('year').value = car.year || '';
-                    document.getElementById('seats').value = car.seats || '';
-                    document.getElementById('transmission').value = car.transmission || '';
-                    document.getElementById('fuelType').value = car.fuelType || '';
-                    document.getElementById('pricePerDay').value = car.pricePerDay;
-                    document.getElementById('status').value = car.status;
-                    document.getElementById('description').value = car.description || '';
-                    document.getElementById('modalTitle').textContent = 'Sửa thông tin xe';
-                    $('#carModal').modal('show');
-                })
-                .catch(error => {
-                    alert('Không thể tải thông tin xe: ' + error);
-                });
         }
         
         function loadModels(selectedModelId) {
@@ -296,14 +309,14 @@
                 return;
             }
             
-            fetch('car-model?action=getByBrand&brandId=' + brandId)
+            fetch('car-models?action=getByBrand&brandId=' + brandId)
                 .then(response => response.json())
                 .then(models => {
                     modelSelect.innerHTML = '<option value="">Chọn model</option>';
                     models.forEach(model => {
                         const option = document.createElement('option');
                         option.value = model.modelId;
-                        option.textContent = model.name;
+                        option.textContent = model.modelName;
                         if (selectedModelId && model.modelId == selectedModelId) {
                             option.selected = true;
                         }

@@ -543,6 +543,7 @@ public class UserDAO extends DBContext {
         user.setCreatedAt(rs.getTimestamp("CreatedAt"));
         user.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
         user.setLastLoginAt(rs.getTimestamp("LastLoginAt"));
+        user.setRoleId(rs.getInt("RoleID")); 
         return user;
     }
     
