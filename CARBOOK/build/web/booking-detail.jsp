@@ -91,7 +91,16 @@
                             </c:if>
                             
                             <c:if test="${booking.status == 'Approved'}">
-                                <a href="payment?action=create&bookingId=${booking.bookingId}" class="btn btn-primary">Thanh toán</a>
+                                <!-- VNPay Payment Button -->
+                                <form action="vnpay-payment" method="post" style="display: inline;">
+                                    <input type="hidden" name="bookingId" value="${booking.bookingId}">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="ion-ios-card"></i> Thanh toán VNPay
+                                    </button>
+                                </form>
+                                <a href="payment?action=create&bookingId=${booking.bookingId}" class="btn btn-info">
+                                    <i class="ion-ios-cash"></i> Thanh toán khác
+                                </a>
                                 <c:if test="${sessionScope.user.roleId == 1 || sessionScope.user.roleId == 2}">
                                     <a href="booking?action=complete&id=${booking.bookingId}" class="btn btn-success" onclick="return confirm('Xác nhận hoàn thành?')">Hoàn thành</a>
                                 </c:if>

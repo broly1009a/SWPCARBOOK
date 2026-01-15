@@ -11,11 +11,13 @@ public class Payment {
     private int paymentId;
     private int bookingId;
     private int paymentMethodId;
+    private String paymentMethod; // For display: "VNPay", "Cash", etc.
     private String paymentReference;
     private BigDecimal amount;
     private Timestamp paymentDate;
     private String status;
     private String transactionId;
+    private String transactionReference; // VNPay transaction reference
     private String notes;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -65,6 +67,14 @@ public class Payment {
         this.paymentMethodId = paymentMethodId;
     }
     
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+    
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+    
     public String getPaymentReference() {
         return paymentReference;
     }
@@ -103,6 +113,14 @@ public class Payment {
     
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+    
+    public String getTransactionReference() {
+        return transactionReference;
+    }
+    
+    public void setTransactionReference(String transactionReference) {
+        this.transactionReference = transactionReference;
     }
     
     public String getNotes() {
