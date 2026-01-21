@@ -28,7 +28,8 @@ public class User {
     // Role reference - direct relationship
     private int roleId;
     private Role role;
-    
+    private String googleId;
+
     // Constructors
     public User() {
     }
@@ -37,7 +38,7 @@ public class User {
                 String fullName, String phoneNumber, String address, Date dateOfBirth,
                 String driverLicenseNumber, Date driverLicenseExpiry, String profileImageURL,
                 boolean isActive, boolean isEmailVerified, Timestamp createdAt, 
-                Timestamp updatedAt, Timestamp lastLoginAt, int roleId) {
+                Timestamp updatedAt, Timestamp lastLoginAt, int roleId,String googleId) {
         this.userId = userId;
         this.username = username;
         this.email = email;
@@ -55,6 +56,7 @@ public class User {
         this.updatedAt = updatedAt;
         this.lastLoginAt = lastLoginAt;
         this.roleId = roleId;
+        this.googleId = googleId;
     }
     
     // Getters and Setters
@@ -204,6 +206,14 @@ public class User {
             this.roleId = role.getRoleId();
         }
     }
+    public String getGoogleId() {
+    return googleId;
+}
+
+public void setGoogleId(String googleId) {
+    this.googleId = googleId;
+}
+
     
     @Override
     public String toString() {

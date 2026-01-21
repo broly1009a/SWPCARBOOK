@@ -566,4 +566,60 @@ public class UserDAO extends DBContext {
             return password; // Fallback to plain text (not recommended for production)
         }
     }
+    
+    
+
+// tìm user theo GoogleID
+public User getUserByGoogleId(String googleId) {
+    String sql = "SELECT * FROM Users WHERE GoogleID = ?";
+    try {
+        PreparedStatement stm = connection.prepareStatement(sql);
+        stm.setString(1, googleId);
+        ResultSet rs = stm.executeQuery();
+
+        if (rs.next()) {
+            return extractUserFromResultSet(rs);
+        }
+    } catch (SQLException e) {
+        System.out.println("Get user by GoogleID error: " + e.getMessage());
+    }
+    return null;
+}
+
+public void updateGoogleId(int userId, String googleId) {
+    String sql = "UPDATE Users SET GoogleID = ? WHERE UserID = ?";
+    try {
+        PreparedStatement stm = connection.prepareStatement(sql);
+        stm.setString(1, googleId);
+        stm.setInt(2, userId);
+        stm.executeUpdate();
+    } catch (SQLException e) {
+        System.out.println("Update GoogleID error: " + e.getMessage());
+    }
+}
+
+public void insertGoogleUser(User u) {
+    String sql = "INSERT INTO Users "
+            + "(Username, Email, PasswordHash, FullName, RoleID, IsActive, IsEmailVerified, GoogleID) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    try {
+        PreparedStatement stm = connection.prepareStatement(sql);
+        stm.setString(1, u.getUsername());
+        stm.setString(2, u.getEmail());
+        stm.setString(3, null);
+        stm.setString(4, u.getFullName());
+        stm.setInt(5, 2);
+        stm.setBoolean(6, true);
+        stm.setBoolean(7, true);
+        stm.setString(8, u.getGoogleId());
+        stm.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+
+
+
+
 }
