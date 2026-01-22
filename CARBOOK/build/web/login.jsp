@@ -132,6 +132,15 @@
                                                         <i class="fab fa-google mr-2"></i> Google
                                                         </a>
                                                         
+                                                       <a href="https://www.facebook.com/v19.0/dialog/oauth
+?client_id=
+&redirect_uri=http://localhost:9999/CARBOOK/login
+&response_type=code
+&scope=email,public_profile"
+           class="btn btn-outline-primary mx-2 d-flex align-items-center">
+            <i class="fab fa-facebook-f mr-2"></i> Facebook
+        </a>
+                                                    
                                                            </div>
                                                         </div>
                                             <div class="col-md-12 text-center mt-3">
