@@ -374,6 +374,80 @@ public class BookingDAO extends DBContext {
     }
     
     /**
+     * Check if there are active bookings for a car in a date range
+     * @param carId
+     * @param startDate
+     * @param endDate
+     * @return true if there are active bookings, false otherwise
+     */
+    public boolean hasActiveBookingInPeriod(int carId, java.sql.Date startDate, java.sql.Date endDate) {
+        String sql = "SELECT COUNT(*) AS BookingCount FROM Bookings " +
+                     "WHERE CarID = ? " +
+                     "AND Status NOT IN ('Cancelled', 'Rejected', 'Completed') " +
+                     "AND (" +
+                     "   (CAST(PickupDate AS DATE) <= ? AND CAST(ReturnDate AS DATE) >= ?) " +
+                     "   OR (CAST(PickupDate AS DATE) <= ? AND CAST(ReturnDate AS DATE) >= ?) " +
+                     "   OR (CAST(PickupDate AS DATE) >= ? AND CAST(ReturnDate AS DATE) <= ?) " +
+                     ")";
+        
+        try {
+            PreparedStatement stm = connection.prepareStatement(sql);
+            stm.setInt(1, carId);
+            stm.setDate(2, endDate);
+            stm.setDate(3, startDate);
+            stm.setDate(4, startDate);
+            stm.setDate(5, startDate);
+            stm.setDate(6, startDate);
+            stm.setDate(7, endDate);
+            ResultSet rs = stm.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("BookingCount") > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking active bookings: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    /**
+     * Check if car has scheduled or in-progress maintenance in a date range
+     * @param carId
+     * @param startDate
+     * @param endDate
+     * @return true if there is active maintenance, false otherwise
+     */
+    public boolean hasActiveMaintenanceInPeriod(int carId, java.sql.Date startDate, java.sql.Date endDate) {
+        String sql = "SELECT COUNT(*) AS MaintenanceCount FROM MaintenanceRecords " +
+                     "WHERE CarID = ? " +
+                     "AND Status IN ('Scheduled', 'In Progress') " +
+                     "AND (" +
+                     "   (CAST(ServiceDate AS DATE) <= ? AND CAST(ISNULL(NextServiceDate, ServiceDate) AS DATE) >= ?) " +
+                     "   OR (CAST(ServiceDate AS DATE) <= ? AND CAST(ISNULL(NextServiceDate, ServiceDate) AS DATE) >= ?) " +
+                     "   OR (CAST(ServiceDate AS DATE) >= ? AND CAST(ServiceDate AS DATE) <= ?) " +
+                     ")";
+        
+        try {
+            PreparedStatement stm = connection.prepareStatement(sql);
+            stm.setInt(1, carId);
+            stm.setDate(2, endDate);
+            stm.setDate(3, startDate);
+            stm.setDate(4, startDate);
+            stm.setDate(5, startDate);
+            stm.setDate(6, startDate);
+            stm.setDate(7, endDate);
+            ResultSet rs = stm.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("MaintenanceCount") > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking active maintenance: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    /**
      * Generate unique booking reference
      * @return Booking reference string
      */
@@ -434,6 +508,12 @@ public class BookingDAO extends DBContext {
             UserDAO userDAO = new UserDAO();
             User customer = userDAO.getUserById(booking.getCustomerId());
             booking.setCustomer(customer);
+            
+            // Load car owner if car exists
+            if (car != null && car.getOwnerId() > 0) {
+                User owner = userDAO.getUserById(car.getOwnerId());
+                car.setOwner(owner);
+            }
             
         } catch (Exception e) {
             System.out.println("Error loading booking related data: " + e.getMessage());

@@ -4,6 +4,7 @@ import model.Car;
 import model.CarModel;
 import model.CarCategory;
 import model.CarBrand;
+import model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -390,6 +391,15 @@ public class CarDAO extends DBContext {
                 }
             }
             
+            // Load owner
+            if (car.getOwnerId() > 0) {
+                UserDAO userDAO = new UserDAO();
+                User owner = userDAO.getUserById(car.getOwnerId());
+                if (owner != null) {
+                    car.setOwner(owner);
+                }
+            }
+            
             // Load first image
             String imageSql = "SELECT TOP 1 ImageURL FROM CarImages WHERE CarID = ? ORDER BY DisplayOrder";
             PreparedStatement stm = connection.prepareStatement(imageSql);
@@ -453,7 +463,8 @@ public class CarDAO extends DBContext {
      * @return true if available, false otherwise
      */
     public boolean isCarAvailableForPeriod(int carId, java.sql.Date pickupDate, java.sql.Date dropoffDate) {
-        String sql = "SELECT COUNT(*) FROM Bookings " +
+        // Check for existing bookings
+        String sqlBookings = "SELECT COUNT(*) FROM Bookings " +
                      "WHERE CarID = ? " +
                      "AND Status NOT IN ('Cancelled', 'Rejected') " +
                      "AND ((PickupDate <= ? AND ReturnDate >= ?) " +
@@ -461,7 +472,7 @@ public class CarDAO extends DBContext {
                      "OR (PickupDate >= ? AND ReturnDate <= ?))";
         
         try {
-            PreparedStatement stm = connection.prepareStatement(sql);
+            PreparedStatement stm = connection.prepareStatement(sqlBookings);
             stm.setInt(1, carId);
             stm.setDate(2, dropoffDate);
             stm.setDate(3, dropoffDate);
@@ -473,8 +484,62 @@ public class CarDAO extends DBContext {
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
                 int conflictCount = rs.getInt(1);
-                return conflictCount == 0; // Available if no conflicts
+                if (conflictCount > 0) {
+                    return false; // Has booking conflicts
+                }
             }
+            
+            // Check for blocked periods in CarAvailability
+            String sqlAvailability = "SELECT COUNT(*) FROM CarAvailability " +
+                     "WHERE CarID = ? AND IsAvailable = 0 " +
+                     "AND ((StartDate <= ? AND EndDate >= ?) " +
+                     "OR (StartDate <= ? AND EndDate >= ?) " +
+                     "OR (StartDate >= ? AND EndDate <= ?))";
+            
+            stm = connection.prepareStatement(sqlAvailability);
+            stm.setInt(1, carId);
+            stm.setDate(2, dropoffDate);
+            stm.setDate(3, dropoffDate);
+            stm.setDate(4, pickupDate);
+            stm.setDate(5, pickupDate);
+            stm.setDate(6, pickupDate);
+            stm.setDate(7, dropoffDate);
+            
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                int blockedCount = rs.getInt(1);
+                if (blockedCount > 0) {
+                    return false; // Has blocked periods
+                }
+            }
+            
+            // Check for active maintenance (In Progress or Scheduled)
+            String sqlMaintenance = "SELECT COUNT(*) FROM MaintenanceRecords " +
+                     "WHERE CarID = ? " +
+                     "AND Status IN ('Scheduled', 'In Progress') " +
+                     "AND ((CAST(ServiceDate AS DATE) <= ? AND CAST(ISNULL(NextServiceDate, ServiceDate) AS DATE) >= ?) " +
+                     "OR (CAST(ServiceDate AS DATE) <= ? AND CAST(ISNULL(NextServiceDate, ServiceDate) AS DATE) >= ?) " +
+                     "OR (CAST(ServiceDate AS DATE) >= ? AND CAST(ServiceDate AS DATE) <= ?))";
+            
+            stm = connection.prepareStatement(sqlMaintenance);
+            stm.setInt(1, carId);
+            stm.setDate(2, dropoffDate);
+            stm.setDate(3, dropoffDate);
+            stm.setDate(4, pickupDate);
+            stm.setDate(5, pickupDate);
+            stm.setDate(6, pickupDate);
+            stm.setDate(7, dropoffDate);
+            
+            rs = stm.executeQuery();
+            if (rs.next()) {
+                int maintenanceCount = rs.getInt(1);
+                if (maintenanceCount > 0) {
+                    return false; // Has maintenance scheduled
+                }
+            }
+            
+            return true; // Available if no conflicts and not blocked
+            
         } catch (SQLException e) {
             System.out.println("Error checking car availability: " + e.getMessage());
         }

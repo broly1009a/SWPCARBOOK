@@ -86,11 +86,11 @@
                                         <c:forEach var="payment" items="${payments}">
                                             <tr>
                                                 <td>${payment.transactionId}</td>
-                                                <td>${payment.booking.bookingReference}</td>
+                                                <td>${payment.paymentReference}</td>
                                                 <c:if test="${sessionScope.user.roleId == 1}">
-                                                    <td>${payment.booking.customer.fullName}</td>
+                                                    <td>Booking #${payment.bookingId}</td>
                                                 </c:if>
-                                                <td>${payment.paymentMethod.name}</td>
+                                                <td>${payment.paymentMethod}</td>
                                                 <td><fmt:formatDate value="${payment.paymentDate}" pattern="dd/MM/yyyy HH:mm"/></td>
                                                 <td><fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="₫"/></td>
                                                 <td>
@@ -99,9 +99,13 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <a href="payment?action=detail&id=${payment.paymentId}" class="btn btn-sm btn-info">Chi tiết</a>
-                                                    <c:if test="${payment.status == 'Pending' && (sessionScope.user.roleId == 1 || payment.booking.car.ownerId == sessionScope.user.userId)}">
-                                                        <a href="payment?action=confirm&id=${payment.paymentId}" class="btn btn-sm btn-success" onclick="return confirm('Xác nhận thanh toán?')">Xác nhận</a>
+                                                    <a href="payment?action=view&id=${payment.paymentId}" class="btn btn-sm btn-info">Chi tiết</a>
+                                                    <c:if test="${payment.status == 'Pending' && sessionScope.user.roleId == 1}">
+                                                        <form action="payment" method="post" style="display:inline;">
+                                                            <input type="hidden" name="action" value="confirm">
+                                                            <input type="hidden" name="id" value="${payment.paymentId}">
+                                                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Xác nhận thanh toán?')">Xác nhận</button>
+                                                        </form>
                                                     </c:if>
                                                 </td>
                                             </tr>
@@ -131,7 +135,20 @@
     
     <%@ include file="includes/footer.jsp" %>
     
-    <script src="js/jquery.min.js"></script>
+      <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+    <script src="js/jquery.animateNumber.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/jquery.timepicker.min.js"></script>
+    <script src="js/scrollax.min.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

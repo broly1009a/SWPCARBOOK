@@ -135,6 +135,7 @@
                                                 </td>
                                                 <td>
                                                     <a href="car-management?action=edit&id=${car.carId}" class="btn btn-sm btn-info">Sửa</a>
+                                                    <a href="car-images?carId=${car.carId}" class="btn btn-sm btn-success">Quản lý ảnh</a>
                                                     <a href="car-management?action=delete&id=${car.carId}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa xe này?')">Xóa</a>
                                                 </td>
                                             </tr>

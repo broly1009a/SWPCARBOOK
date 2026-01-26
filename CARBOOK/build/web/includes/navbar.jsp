@@ -30,6 +30,8 @@
                                     <h6 class="dropdown-header">Quản trị</h6>
                                     <a class="dropdown-item" href="role-management">Vai trò</a>
                                     <a class="dropdown-item" href="car-management">Quản lý xe</a>
+                                    <a class="dropdown-item" href="car-availability">Lịch không khả dụng</a>
+                                    <a class="dropdown-item" href="maintenance">Quản lý bảo trì</a>
                                     <a class="dropdown-item" href="booking?action=list">Tất cả booking</a>
                                     <a class="dropdown-item" href="payment?action=list">Tất cả thanh toán</a>
                                 </c:if>
@@ -38,6 +40,8 @@
                                     <div class="dropdown-divider"></div>
                                     <h6 class="dropdown-header">Chủ xe</h6>
                                     <a class="dropdown-item" href="car-management">Xe của tôi</a>
+                                    <a class="dropdown-item" href="car-availability">Quản lý lịch xe</a>
+                                    <a class="dropdown-item" href="maintenance">Lịch bảo trì</a>
                                     <a class="dropdown-item" href="booking?action=list">Đơn đặt xe</a>
                                     <a class="dropdown-item" href="review?action=pending">Đánh giá chờ duyệt</a>
                                 </c:if>
