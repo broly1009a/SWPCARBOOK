@@ -33,7 +33,7 @@ CREATE TABLE Users (
     UserID INT PRIMARY KEY IDENTITY(1,1),
     Username NVARCHAR(50) NOT NULL UNIQUE,
     Email NVARCHAR(100) NOT NULL UNIQUE,
-    PasswordHash NVARCHAR(255) NOT NULL,
+    PasswordHash NVARCHAR(255), -- Allow NULL for Google OAuth users
     FullName NVARCHAR(100),
     PhoneNumber NVARCHAR(20),
     Address NVARCHAR(255),
@@ -41,6 +41,7 @@ CREATE TABLE Users (
     DriverLicenseNumber NVARCHAR(50),
     DriverLicenseExpiry DATE,
     ProfileImageURL NVARCHAR(500),
+    GoogleID NVARCHAR(255), -- Google OAuth ID
     RoleID INT NOT NULL DEFAULT 3, -- Default to Customer role
     IsActive BIT DEFAULT 1,
     IsEmailVerified BIT DEFAULT 0,

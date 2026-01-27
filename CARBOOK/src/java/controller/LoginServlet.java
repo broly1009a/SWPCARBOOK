@@ -29,47 +29,72 @@ if (session != null && session.getAttribute("user") != null) {
 }
         response.setContentType("text/html;charset=UTF-8");
         String code = request.getParameter("code");
-        // log gg
+        // Google OAuth login flow
         if (code != null && !code.isEmpty()) {
-               try {
-        String accessToken = GoogleLogin.getToken(code);
-        GoogleAccount acc = GoogleLogin.getUserInfo(accessToken);
-        String googleId = acc.getId();
-        String email = acc.getEmail();
-        String fullName = acc.getName();
+            try {
+                System.out.println("Processing Google OAuth code: " + code);
+                
+                String accessToken = GoogleLogin.getToken(code);
+                System.out.println("Got access token: " + (accessToken != null ? "SUCCESS" : "FAILED"));
+                
+                GoogleAccount acc = GoogleLogin.getUserInfo(accessToken);
+                String googleId = acc.getId();
+                String email = acc.getEmail();
+                String fullName = acc.getName();
+                
+                System.out.println("Google account info - ID: " + googleId + ", Email: " + email + ", Name: " + fullName);
 
-        UserDAO dao = new UserDAO();
-        User user = dao.getUserByGoogleId(googleId);
+                UserDAO dao = new UserDAO();
+                User user = dao.getUserByGoogleId(googleId);
+                System.out.println("Found existing user by GoogleID: " + (user != null));
 
-        if (user == null) {
-            user = dao.getUserByEmail(email);
+                if (user == null) {
+                    // Try to find by email
+                    user = dao.getUserByEmail(email);
+                    System.out.println("Found existing user by email: " + (user != null));
 
-            if (user != null) {
-                dao.updateGoogleId(user.getUserId(), googleId);
-            } else {
-                User newUser = new User();
-                newUser.setUsername(email); 
-                newUser.setEmail(email);
-                newUser.setFullName(fullName);
-                newUser.setGoogleId(googleId);
+                    if (user != null) {
+                        // Update existing user with GoogleID
+                        dao.updateGoogleId(user.getUserId(), googleId);
+                        System.out.println("Updated existing user with GoogleID");
+                    } else {
+                        // Create new user
+                        User newUser = new User();
+                        newUser.setUsername(email); 
+                        newUser.setEmail(email);
+                        newUser.setFullName(fullName);
+                        newUser.setGoogleId(googleId);
 
-                dao.insertGoogleUser(newUser);
+                        dao.insertGoogleUser(newUser);
+                        System.out.println("Created new Google user");
+                    }
+                    
+                    // Retrieve the user again to get complete info
+                    user = dao.getUserByGoogleId(googleId);
+                    System.out.println("Retrieved user after insert/update: " + (user != null));
+                }
+
+                if (user != null) {
+                    session.setAttribute("user", user);
+                    session.setAttribute("userId", user.getUserId());
+                    session.setAttribute("username", user.getUsername());
+                    session.setAttribute("fullName", user.getFullName());
+                    
+                    System.out.println("Session created successfully for user: " + user.getUserId());
+                    response.sendRedirect("home");
+                    return;
+                } else {
+                    System.out.println("ERROR: User is null after Google login process");
+                    response.sendRedirect("login.jsp?error=google_user_creation_failed");
+                    return;
+                }
+
+            } catch (Exception e) {
+                System.out.println("Google login error: " + e.getMessage());
+                e.printStackTrace();
+                response.sendRedirect("login.jsp?error=google_login_failed");
+                return;
             }
-            user = dao.getUserByGoogleId(googleId);
-        }
-
-        session.setAttribute("user", user);
-        session.setAttribute("userId", user.getUserId());
-        session.setAttribute("username", user.getUsername());
-        session.setAttribute("fullName", user.getFullName());
-
-        response.sendRedirect("home");
-        return;
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect("login.jsp?error=google_login_failed");
-    }
     
 } else {
         // Forward to login page
