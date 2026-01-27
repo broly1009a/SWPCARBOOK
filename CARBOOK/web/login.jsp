@@ -117,6 +117,32 @@
                                                     <div class="submitting"></div>
                                                 </div>
                                             </div>
+                                                
+                                                <div class="col-md-12 text-center mt-3">
+                                            <p class="mb-2">Hoặc đăng nhập bằng</p>
+                                                <div class="d-flex justify-content-center">
+                                                      <a href="https://accounts.google.com/o/oauth2/v2/auth
+?client_id=
+&redirect_uri=http://localhost:9999/CARBOOK/login
+&response_type=code
+&scope=openid%20email%20profile
+&access_type=offline
+&prompt=consent
+" class="btn btn-outline-danger mx-2 d-flex align-items-center">
+                                                        <i class="fab fa-google mr-2"></i> Google
+                                                        </a>
+                                                        
+                                                       <a href="https://www.facebook.com/v19.0/dialog/oauth
+?client_id=
+&redirect_uri=http://localhost:9999/CARBOOK/login
+&response_type=code
+&scope=email,public_profile"
+           class="btn btn-outline-primary mx-2 d-flex align-items-center">
+            <i class="fab fa-facebook-f mr-2"></i> Facebook
+        </a>
+                                                    
+                                                           </div>
+                                                        </div>
                                             <div class="col-md-12 text-center mt-3">
                                                 <p>Chưa có tài khoản? <a href="register" class="text-primary font-weight-bold">Đăng ký ngay</a></p>
                                             </div>

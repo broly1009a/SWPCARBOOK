@@ -9,7 +9,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
+import utils.GoogleAccount;
+import controller.GoogleLogin;
 /**
  * LoginServlet - Handles user login
  * @author
@@ -20,16 +21,67 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+    
+        HttpSession session = request.getSession();
+if (session != null && session.getAttribute("user") != null) {
+    response.sendRedirect("home");
+    return;
+}
+        response.setContentType("text/html;charset=UTF-8");
+        String code = request.getParameter("code");
+        // log gg
+        if (code != null && !code.isEmpty()) {
+               try {
+        String accessToken = GoogleLogin.getToken(code);
+        GoogleAccount acc = GoogleLogin.getUserInfo(accessToken);
+        String googleId = acc.getId();
+        String email = acc.getEmail();
+        String fullName = acc.getName();
+
+        UserDAO dao = new UserDAO();
+        User user = dao.getUserByGoogleId(googleId);
+
+        if (user == null) {
+            user = dao.getUserByEmail(email);
+
+            if (user != null) {
+                dao.updateGoogleId(user.getUserId(), googleId);
+            } else {
+                User newUser = new User();
+                newUser.setUsername(email); 
+                newUser.setEmail(email);
+                newUser.setFullName(fullName);
+                newUser.setGoogleId(googleId);
+
+                dao.insertGoogleUser(newUser);
+            }
+            user = dao.getUserByGoogleId(googleId);
+        }
+
+        session.setAttribute("user", user);
+        session.setAttribute("userId", user.getUserId());
+        session.setAttribute("username", user.getUsername());
+        session.setAttribute("fullName", user.getFullName());
+
+        response.sendRedirect("home");
+        return;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("login.jsp?error=google_login_failed");
+    }
+    
+} else {
         // Forward to login page
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
-
+    }
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        String username = request.getParameter("username");
+          
+    String username = request.getParameter("username");
         String password = request.getParameter("password");
         
         // Validate input
@@ -67,6 +119,10 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("home");
             }
         }
+
+
+        
+       
     }
 
     @Override

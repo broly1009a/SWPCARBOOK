@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * HomeServlet - Handles home page display
  */
-@WebServlet(name = "HomeServlet", urlPatterns = {"/home", "/index", ""})
+@WebServlet(name = "HomeServlet", urlPatterns = {"/home"})
 public class HomeServlet extends HttpServlet {
 
     private CarDAO carDAO = new CarDAO();
