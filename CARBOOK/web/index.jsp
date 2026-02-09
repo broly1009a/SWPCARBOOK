@@ -31,7 +31,7 @@
   </head>
 <body>
     
-	  <%-- <%@ include file="includes/navbar.jsp" %> --%>
+	<%@ include file="includes/navbar.jsp" %> 
     <!-- END nav -->
 
     
