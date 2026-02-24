@@ -189,12 +189,25 @@ public class CarManagementServlet extends HttpServlet {
         request.getRequestDispatcher("car-detail.jsp").forward(request, response);
     }
 
-    private void createCar(HttpServletRequest request, HttpServletResponse response, User user)
+  private void createCar(HttpServletRequest request, HttpServletResponse response, User user)
             throws ServletException, IOException {
         try {
+          
+            int modelId = Integer.parseInt(request.getParameter("modelId"));
+            model.CarModel selectedModel = modelDAO.getModelById(modelId);
+            int currentYear = java.time.LocalDate.now().getYear();
+
+            if (selectedModel != null && selectedModel.getYear() > currentYear) {
+                request.setAttribute("error", "Không thể thêm xe! Dòng xe " + selectedModel.getModelName() 
+                        + " có năm sản xuất (" + selectedModel.getYear() + ") lớn hơn năm hiện tại.");
+                showAddForm(request, response);
+                return;
+            }
+
+            
             Car car = new Car();
             car.setOwnerId(user.getUserId());
-            car.setModelId(Integer.parseInt(request.getParameter("modelId")));
+            car.setModelId(modelId);
             car.setCategoryId(Integer.parseInt(request.getParameter("categoryId")));
             car.setLicensePlate(request.getParameter("licensePlate"));
             car.setVinNumber(request.getParameter("vinNumber"));
@@ -244,7 +257,6 @@ public class CarManagementServlet extends HttpServlet {
             showAddForm(request, response);
         }
     }
-
     private void updateCar(HttpServletRequest request, HttpServletResponse response, User user)
             throws ServletException, IOException {
         try {
