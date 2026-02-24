@@ -31,7 +31,11 @@
   </head>
 <body>
     
+<<<<<<< HEAD
 	   <%@ include file="includes/navbar.jsp" %>
+=======
+	<%@ include file="includes/navbar.jsp" %> 
+>>>>>>> de2e62ac9aaa5a14108af246a26fcb6a189b436f
     <!-- END nav -->
 
     
