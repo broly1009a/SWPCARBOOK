@@ -50,16 +50,16 @@ public class CarBrandServlet extends HttpServlet {
                 response.sendRedirect("brand?action=list");
             }
         } 
-        // --- ĐOẠN NÀY ĐÃ ĐƯỢC FIX ĐÚNG TÊN HÀM TRONG DAO ---
+        
         else if ("delete".equals(action)) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 
-                // GỌI ĐÚNG HÀM hasModels TRONG DAO CỦA BẠN
+               
                 if (dao.hasModels(id)) {
                     session.setAttribute("error", "Không thể xóa! Hãng xe này hiện đang có các Model liên kết. Hãy xóa các Model trước!");
                 } else {
-                    // Nếu không có Model thì mới thực hiện xóa
+                   
                     if (dao.deleteBrand(id)) {
                         session.setAttribute("success", "Xóa hãng xe thành công!");
                     } else {

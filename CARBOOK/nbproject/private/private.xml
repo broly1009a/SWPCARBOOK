@@ -3,7 +3,30 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/dal/ReviewDAO.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/web/role-management.jsp</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/model/Review.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/ReviewServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/RoleManagementServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/web/booking-detail.jsp</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/dal/PaymentDAO.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/ProfileServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/nbproject/project.properties</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/web/car-management.jsp</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/nbproject/genfiles.properties</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/CarImageServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/PaymentServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/dal/CarDAO.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/VNPayServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/web/profile.jsp</file>
             <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/dal/DBContext.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/GoogleLogin.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/CarManagementServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/CarModelServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/web/index.jsp</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/NotificationServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/CarBrandServlet.java</file>
+            <file>file:/D:/Fpt/SWPCARBOOK/CARBOOK/src/java/controller/CarDetailServlet.java</file>
         </group>
     </open-files>
 </project-private>
