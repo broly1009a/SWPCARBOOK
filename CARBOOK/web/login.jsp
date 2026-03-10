@@ -122,7 +122,7 @@
                                             <p class="mb-2">Hoặc đăng nhập bằng</p>
                                                 <div class="d-flex justify-content-center">
                                                       <a href="https://accounts.google.com/o/oauth2/v2/auth
-?client_id=
+?client_id=237122045476-h962mp91qbrlobppot4keeldck31864o.apps.googleusercontent.com
 &redirect_uri=http://localhost:9999/CARBOOK/login
 &response_type=code
 &scope=openid%20email%20profile
@@ -133,7 +133,7 @@
                                                         </a>
                                                         
                                                        <a href="https://www.facebook.com/v19.0/dialog/oauth
-?client_id=
+?client_id=1442722840556750
 &redirect_uri=http://localhost:9999/CARBOOK/login
 &response_type=code
 &scope=email,public_profile"

@@ -42,6 +42,37 @@
     		color: #666;
     		font-size: 18px;
     	}
+    	
+    	/* Car Image Carousel Styles */
+    	#carImageCarousel .carousel-item {
+    		height: 500px;
+    	}
+    	#carImageCarousel .carousel-control-prev,
+    	#carImageCarousel .carousel-control-next {
+    		width: 50px;
+    		height: 50px;
+    		top: 50%;
+    		transform: translateY(-50%);
+    		background-color: rgba(0, 0, 0, 0.5);
+    		border-radius: 50%;
+    		opacity: 0.7;
+    	}
+    	#carImageCarousel .carousel-control-prev:hover,
+    	#carImageCarousel .carousel-control-next:hover {
+    		opacity: 1;
+    	}
+    	#carImageCarousel .carousel-indicators {
+    		bottom: 20px;
+    	}
+    	#carImageCarousel .carousel-indicators li {
+    		width: 12px;
+    		height: 12px;
+    		border-radius: 50%;
+    		background-color: rgba(255, 255, 255, 0.5);
+    	}
+    	#carImageCarousel .carousel-indicators li.active {
+    		background-color: #01d28e;
+    	}
     </style>
   </head>
   <body>
@@ -67,7 +98,45 @@
       	<div class="row justify-content-center">
       		<div class="col-md-12">
       			<div class="car-details">
-      				<div class="img rounded" style="background-image: url(${not empty car.imageUrl ? car.imageUrl : 'images/bg_1.jpg'});"></div>
+      				<!-- Car Image Gallery -->
+      				<c:choose>
+      					<c:when test="${not empty carImages and carImages.size() > 1}">
+      						<!-- Multiple images - show carousel -->
+      						<div id="carImageCarousel" class="carousel slide" data-ride="carousel">
+      							<!-- Indicators -->
+      							<ol class="carousel-indicators">
+      								<c:forEach var="img" items="${carImages}" varStatus="status">
+      									<li data-target="#carImageCarousel" data-slide-to="${status.index}" 
+      										class="${status.index == 0 ? 'active' : ''}"></li>
+      								</c:forEach>
+      							</ol>
+      							
+      							<!-- Slides -->
+      							<div class="carousel-inner">
+      								<c:forEach var="img" items="${carImages}" varStatus="status">
+      									<div class="carousel-item ${status.index == 0 ? 'active' : ''}">
+      										<div class="img rounded" style="background-image: url(${img.imageURL}); height: 500px; background-size: cover; background-position: center;"></div>
+      									</div>
+      								</c:forEach>
+      							</div>
+      							
+      							<!-- Controls -->
+      							<a class="carousel-control-prev" href="#carImageCarousel" role="button" data-slide="prev">
+      								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      								<span class="sr-only">Trước</span>
+      							</a>
+      							<a class="carousel-control-next" href="#carImageCarousel" role="button" data-slide="next">
+      								<span class="carousel-control-next-icon" aria-hidden="true"></span>
+      								<span class="sr-only">Tiếp</span>
+      							</a>
+      						</div>
+      					</c:when>
+      					<c:otherwise>
+      						<!-- Single image or no images -->
+      						<div class="img rounded" style="background-image: url(${not empty car.imageUrl ? car.imageUrl : 'images/bg_1.jpg'});"></div>
+      					</c:otherwise>
+      				</c:choose>
+      				
       				<div class="text text-center">
       					<span class="subheading">${car.category.categoryName}</span>
       					<h2>${car.model.brand.brandName} ${car.model.modelName} ${car.model.year}</h2>

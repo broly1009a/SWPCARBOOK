@@ -2,8 +2,10 @@ package controller;
 
 import dal.CarDAO;
 import dal.CarCategoryDAO;
+import dal.CarImageDAO;
 import model.Car;
 import model.CarCategory;
+import model.CarImage;
 import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.ServletException;
@@ -20,6 +22,7 @@ public class CarSearchServlet extends HttpServlet {
 
     private CarDAO carDAO = new CarDAO();
     private CarCategoryDAO categoryDAO = new CarCategoryDAO();
+    private CarImageDAO imageDAO = new CarImageDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -91,6 +94,28 @@ public class CarSearchServlet extends HttpServlet {
             // Get all categories for filter
             List<CarCategory> categories = categoryDAO.getAllCategories();
             System.out.println("Categories loaded: " + (categories != null ? categories.size() : "null"));
+            
+            // Load primary image for each car
+            if (cars != null && !cars.isEmpty()) {
+                System.out.println("Loading images for " + cars.size() + " cars");
+                for (Car car : cars) {
+                    CarImage primaryImage = imageDAO.getPrimaryImage(car.getCarId());
+                    if (primaryImage != null) {
+                        car.setImageUrl(primaryImage.getImageURL());
+                        System.out.println("Car " + car.getCarId() + " - Primary image: " + primaryImage.getImageURL());
+                    } else {
+                        // If no primary image, get the first image
+                        List<CarImage> images = imageDAO.getImagesByCarId(car.getCarId());
+                        if (images != null && !images.isEmpty()) {
+                            car.setImageUrl(images.get(0).getImageURL());
+                            System.out.println("Car " + car.getCarId() + " - First image: " + images.get(0).getImageURL());
+                        } else {
+                            System.out.println("Car " + car.getCarId() + " - No images found, using default");
+                            car.setImageUrl("images/car-1.jpg"); // Set default image
+                        }
+                    }
+                }
+            }
             
             // Set attributes with null safety
             request.setAttribute("cars", cars != null ? cars : new java.util.ArrayList<>());

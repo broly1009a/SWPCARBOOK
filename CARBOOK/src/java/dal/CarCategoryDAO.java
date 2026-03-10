@@ -152,4 +152,19 @@ public class CarCategoryDAO extends DBContext {
         category.setCreatedAt(rs.getTimestamp("CreatedAt"));
         return category;
     }
+    
+    public boolean isCategoryInUse(int categoryId) {
+    String sql = "SELECT COUNT(*) FROM Cars WHERE CategoryID = ?";
+    try {
+        PreparedStatement stm = connection.prepareStatement(sql);
+        stm.setInt(1, categoryId);
+        ResultSet rs = stm.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        System.out.println("Error checking category usage: " + e.getMessage());
+    }
+    return false;
+}
 }

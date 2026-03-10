@@ -1,8 +1,11 @@
 package controller;
 
 import dal.CarDAO;
+import dal.CarImageDAO;
 import model.Car;
+import model.CarImage;
 import java.io.IOException;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class CarDetailServlet extends HttpServlet {
 
     private CarDAO carDAO = new CarDAO();
+    private CarImageDAO imageDAO = new CarImageDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -38,7 +42,21 @@ public class CarDetailServlet extends HttpServlet {
                 return;
             }
             
+            // Load all images for the car
+            List<CarImage> carImages = imageDAO.getImagesByCarId(carId);
+            
+            // Set primary image to car object
+            if (carImages != null && !carImages.isEmpty()) {
+                CarImage primaryImage = imageDAO.getPrimaryImage(carId);
+                if (primaryImage != null) {
+                    car.setImageUrl(primaryImage.getImageURL());
+                } else {
+                    car.setImageUrl(carImages.get(0).getImageURL());
+                }
+            }
+            
             request.setAttribute("car", car);
+            request.setAttribute("carImages", carImages != null ? carImages : new java.util.ArrayList<>());
             request.getRequestDispatcher("car-single.jsp").forward(request, response);
             
         } catch (NumberFormatException e) {
