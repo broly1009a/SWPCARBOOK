@@ -12,6 +12,7 @@ import model.User;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -53,6 +54,7 @@ public class CarManagementServlet extends HttpServlet {
                 listCars(request, response, user);
                 break;
             case "add":
+            case "create":
                 showAddForm(request, response);
                 break;
             case "edit":
@@ -99,36 +101,77 @@ public class CarManagementServlet extends HttpServlet {
             throws ServletException, IOException {
         List<Car> cars;
         
+        // Get filter parameters
+        String search = request.getParameter("search");
+        String categoryIdStr = request.getParameter("categoryId");
+        String statusFilter = request.getParameter("status");
+        
+        System.out.println("=== Car Filter Debug ===");
+        System.out.println("Search: " + search);
+        System.out.println("Category ID: " + categoryIdStr);
+        System.out.println("Status: " + statusFilter);
+        System.out.println("User Role: " + user.getRoleId());
+        
         // Admin sees all cars, CarOwner sees only their cars
         if (user.getRoleId() == 1) { // Admin
             cars = carDAO.getAllCars();
-           // System.out.println("Admin - Loading all cars: " + (cars != null ? cars.size() : "null"));
         } else if (user.getRoleId() == 2) { // CarOwner
             cars = carDAO.getCarsByOwnerId(user.getUserId());
-            // System.out.println("CarOwner - Loading cars for userId " + user.getUserId() + ": " + (cars != null ? cars.size() : "null"));
         } else {
             cars = carDAO.getAvailableCars();
-            // System.out.println("Customer - Loading available cars: " + (cars != null ? cars.size() : "null"));
         }
+        
+        System.out.println("Total cars before filter: " + (cars != null ? cars.size() : 0));
+        
+        // Apply filters
+        if (cars != null && !cars.isEmpty()) {
+            List<Car> filteredCars = new ArrayList<>();
+            
+            for (Car car : cars) {
+                boolean matchesSearch = true;
+                boolean matchesCategory = true;
+                boolean matchesStatus = true;
+                
+                // Search filter (license plate or description)
+                if (search != null && !search.trim().isEmpty()) {
+                    String searchLower = search.toLowerCase();
+                    matchesSearch = (car.getLicensePlate() != null && car.getLicensePlate().toLowerCase().contains(searchLower)) ||
+                                  (car.getDescription() != null && car.getDescription().toLowerCase().contains(searchLower));
+                }
+                
+                // Category filter
+                if (categoryIdStr != null && !categoryIdStr.trim().isEmpty()) {
+                    try {
+                        int categoryId = Integer.parseInt(categoryIdStr);
+                        matchesCategory = (car.getCategoryId() == categoryId);
+                        System.out.println("Car " + car.getCarId() + " categoryId: " + car.getCategoryId() + 
+                                         ", filter: " + categoryId + ", matches: " + matchesCategory);
+                    } catch (NumberFormatException e) {
+                        // Invalid category ID, ignore filter
+                    }
+                }
+                
+                // Status filter
+                if (statusFilter != null && !statusFilter.trim().isEmpty()) {
+                    matchesStatus = statusFilter.equals(car.getStatus());
+                    System.out.println("Car " + car.getCarId() + " status: " + car.getStatus() + 
+                                     ", filter: " + statusFilter + ", matches: " + matchesStatus);
+                }
+                
+                // Add car if it matches all filters
+                if (matchesSearch && matchesCategory && matchesStatus) {
+                    filteredCars.add(car);
+                }
+            }
+            
+            cars = filteredCars;
+            System.out.println("Total cars after filter: " + cars.size());
+        }
+        System.out.println("=== End Car Filter Debug ===");
         
         // Load brands and categories for filters and form
         List<CarBrand> brands = brandDAO.getAllBrands();
         List<CarCategory> categories = categoryDAO.getAllCategories();
-        
-        //System.out.println("Brands loaded: " + (brands != null ? brands.size() : "null"));
-        //System.out.println("Categories loaded: " + (categories != null ? categories.size() : "null"));
-        
-        // Detailed logging of cars
-        // if (cars != null) {
-        //     System.out.println("=== Cars Details ===");
-        //     for (Car car : cars) {
-        //         System.out.println("Car ID: " + car.getCarId() + 
-        //                          ", License: " + car.getLicensePlate() + 
-        //                          ", Model ID: " + car.getModelId() + 
-        //                          ", Status: " + car.getStatus());
-        //     }
-        //     System.out.println("===================");
-        // }
         
         request.setAttribute("cars", cars);
         request.setAttribute("brands", brands);
@@ -189,12 +232,25 @@ public class CarManagementServlet extends HttpServlet {
         request.getRequestDispatcher("car-detail.jsp").forward(request, response);
     }
 
-    private void createCar(HttpServletRequest request, HttpServletResponse response, User user)
+  private void createCar(HttpServletRequest request, HttpServletResponse response, User user)
             throws ServletException, IOException {
         try {
+          
+            int modelId = Integer.parseInt(request.getParameter("modelId"));
+            model.CarModel selectedModel = modelDAO.getModelById(modelId);
+            int currentYear = java.time.LocalDate.now().getYear();
+
+            if (selectedModel != null && selectedModel.getYear() > currentYear) {
+                request.setAttribute("error", "Không thể thêm xe! Dòng xe " + selectedModel.getModelName() 
+                        + " có năm sản xuất (" + selectedModel.getYear() + ") lớn hơn năm hiện tại.");
+                showAddForm(request, response);
+                return;
+            }
+
+            
             Car car = new Car();
             car.setOwnerId(user.getUserId());
-            car.setModelId(Integer.parseInt(request.getParameter("modelId")));
+            car.setModelId(modelId);
             car.setCategoryId(Integer.parseInt(request.getParameter("categoryId")));
             car.setLicensePlate(request.getParameter("licensePlate"));
             car.setVinNumber(request.getParameter("vinNumber"));
@@ -229,7 +285,12 @@ public class CarManagementServlet extends HttpServlet {
                 car.setRegistrationExpiryDate(Date.valueOf(registrationDate));
             }
             
-            car.setStatus("Available");
+            String status = request.getParameter("status");
+            if (status != null && !status.isEmpty()) {
+                car.setStatus(status);
+            } else {
+                car.setStatus("Available");
+            }
             
             if (carDAO.createCar(car)) {
                 HttpSession session = request.getSession();
@@ -244,7 +305,6 @@ public class CarManagementServlet extends HttpServlet {
             showAddForm(request, response);
         }
     }
-
     private void updateCar(HttpServletRequest request, HttpServletResponse response, User user)
             throws ServletException, IOException {
         try {
@@ -319,6 +379,11 @@ public class CarManagementServlet extends HttpServlet {
             String registrationDate = request.getParameter("registrationExpiryDate");
             if (registrationDate != null && !registrationDate.isEmpty()) {
                 car.setRegistrationExpiryDate(Date.valueOf(registrationDate));
+            }
+            
+            String status = request.getParameter("status");
+            if (status != null && !status.isEmpty()) {
+                car.setStatus(status);
             }
             
             if (carDAO.updateCar(car)) {
